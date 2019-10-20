@@ -1,10 +1,12 @@
+
 const app = SUGAR.App;
 const customization = require('%app.core%/customization.js');
 const dialog = require('%app.core%/dialog');
-const EditView = require('%app.views.edit%/edit-view');
+//const QuotesEditView = require('%app.views.edit%/modules/quotes-edit-view');
+const QuotesEditView = require('%app.views.edit%/modules/quotes-edit-container-view.js');;
 const geolocation = require('%app.core%/geolocation');
 
-const QuoteEditView = customization.extend(EditView, {
+const CustomQuoteEditView = customization.extend(QuotesEditView, {
 
     initialize(options) {
         this._super(options);    
@@ -47,16 +49,11 @@ const QuoteEditView = customization.extend(EditView, {
             });
         }   
     },
- 
-    _render: function () {
-       this._super("_render");
-
-   },
-
 });
+    
 
+customization.register(CustomQuoteEditView,{module: 'Quotes'});
 
-customization.register(QuoteEditView,{module: 'Quotes'});
+module.exports = CustomQuoteEditView;
 
-module.exports = QuoteEditView;
 
