@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/Resources/Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
+
+'use strict';
+
+const spawnProcess = require('child_process').spawn;
+const path = require('path');
+
+const HOME = require('os').homedir();
+const SDK_PATH = require('./get-sdk-path')();
+
+const helpArgs = ['h', '-h', '/h', '--help', 'help'];
+
+// Get script name the same way yargs gets it, see:
+// https://github.com/yargs/yargs/blob/v9.1.0/yargs.js#L33-L50
+const getScriptName = () => {
+    let $0 = process.argv
+        .slice(0, 2)
+        .map((x, i) => {
+            // ignore the node bin, specify this in your
+            // bin file with #!/usr/bin/env node
+            if (i === 0 && /\b(node|iojs)(\.exe)?$/.test(x)) return;
+            const b = path.relative(process.cwd(), x);
+            return x.match(/^(\/|([a-zA-Z]:)?\\)/) && b.length < x.length ? b : x;
+        })
+        .join(' ').trim();
+
+    if (process.env._ !== undefined && process.argv[1] === process.env._) {
+        $0 = process.env._.replace(
+            `${path.dirname(process.execPath)}/`, ''
+        );
+    }
+
+    return $0;
+};
+
+process.env.SUGAR_MOBILE_SDK_SCRIPT_NAME = getScriptName();
+
+let argv = process.argv.slice(2);
+
+if (argv.length) {
+    let showHelp = false;
+
+    // since 'gulp --help' & 'gulp help' prints gulp help & exits
+    // immediately we have to trim that (and other for consistency) arg
+    // and start the default task which is SDK help
+    helpArgs.forEach(helpArg => {
+        let helpArgIndex = argv.indexOf(helpArg);
+
+        if (helpArgIndex !== -1) {
+            showHelp = true;
+            argv.splice(helpArgIndex, 1);
+        }
+    });
+
+    if (!showHelp) {
+        argv = argv.concat(['--app-path', __dirname]);
+    }
+}
+
+argv.push('--sdk-run');
+
+let child = spawnProcess(path.resolve(HOME, '.nvm', 'nvm-exec'), ['./gulp'].concat(argv), {
+    cwd: SDK_PATH,
+    stdio: 'inherit',
+});
+
+let exitCloseErrorHandler = (codeOrError, signal) => {
+    if (codeOrError || signal) {
+        process.exitCode = 1;
+    }
+};
+
+[ 'exit', 'close', 'error' ].forEach(eventName => child.on(eventName, exitCloseErrorHandler));

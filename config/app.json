@@ -1,0 +1,43 @@
+{
+    "defaults": {
+        "native": {
+            "android": {
+                "packageName": "com.enterconecta.saocrm.crm",
+                "appDownloadUrl": "",
+                "binaryName": "SAO-CRM"
+            },
+            "ios": {
+                "bundleId": "com.enterconecta.saocrm.crm",
+                "appDownloadUrl": "",
+                "binaryName": "SAO-CRM",
+                "teamId": ""
+            }
+        },
+        "jsConfig": {
+            "appName": "SAO-CRM",
+            "productName": "SAO-CRM",
+            "brandName": "SAO-CRM",
+            "appBuild": "1",
+            "appVersion": "0.1.0",
+            "about": {
+                "privacy": "http://sao-crm.com/mobile_privacy",
+                "tos": "http://sao-crm.com/mobile_tos",
+                "support": "support.sao-crm.com",
+                "supportEmail": "support@sao-crm.com",
+                "copyrightText": "Copyright © 2018 SAO-CRMCRM Inc. All Rights Reserved.",
+                "trademarkText": "SAO-CRM and SAO-CRMCRM are trademarks owned by SAO-CRMCRM Inc. All other trademarks are the property of their respective owners."
+            }
+        }
+    },
+    "store": {
+        "native": {
+            "android": {
+                "signingKey": {
+                    "keystore": "",
+                    "storepass": "",
+                    "alias": ""
+                }
+            }
+        }
+    }
+}
