@@ -1,36 +1,47 @@
-const app = SUGAR.App;
-const customization = require('%app.core%/customization.js');
+const customization = require('%app.core%/customization');
+const device = require('%app.core%/device');
 const dialog = require('%app.core%/dialog');
-const EditView = require('%app.views.edit%/edit-view');
 const geolocation = require('%app.core%/geolocation');
 
-const AccountEditView = customization.extend(EditView, {
+customization.registerRecordAction({
+    modules: ['Accounts','Quotes'],
+    name: 'location',
+    types: ['context-menu', 'toolbar'],
+    label: 'Ubicación',
 
-    initialize(options) {
-        this._super(options);    
+    // The icon must be defined in config/app.json
+    iconKey: 'actions.location',
+    rank: 3,
+
+    // Customize action button state.
+    stateHandlers: {
+        isVisible(view, model) {
+            var flag=false;
+            if(model.get('gps_latitud_c') == undefined || model.get('gps_latitud_c')=='' || model.get('gps_latitud_c')==null){
+                flag=true;
+            }
+            return flag;
+        },
     },
 
-    onAfterShow(){
-
-        self = this;
-        if(this.model.get('gps_latitud_c') == undefined || this.model.get('gps_latitud_c')==''){
-
-            app.alert.show('getLatLng', {
+    handler(view, model) {
+        this.elmodelo=model;
+        self=this;
+        app.alert.show('getLatLng', {
               level: 'load',
               closeable: false,
               messages: 'Cargando, por favor espere',
             });
-
-            geolocation.getCurrentPosition({
+        geolocation.getCurrentPosition({
               successCb: (position) => {
                 app.alert.dismiss('getLatLng');
-                self.model.set({
+                
+                self.elmodelo.set({
                   gps_latitud_c:  position.coords.latitude,
                   gps_longitud_c: position.coords.longitude,
                 }, { silent: true });
-                /*
-                self.model.save({
-                    //check_in_address_c: address,
+                
+                self.elmodelo.save({
                 }, {
                     // Pass a list of fields to be sent to the server
                     fields: [
@@ -41,26 +52,20 @@ const AccountEditView = customization.extend(EditView, {
                         // Close the alert when save operation completes
                     }
                 });
-                */
+                
               },
               errorCb: (errCode, errMessage) => {
                 app.alert.dismiss('getLatLng');
                 app.alert.show('getLatLngError', {
-                  level: 'error',
-                  autoClose: true,
-                messages: 'No se ha podido obtener la ubicación',
+                    level: 'error',
+                    autoClose: true,
+                    messages: 'No se ha podido obtener la ubicación',
                 });
               },
               enableHighAccuracy: false,
               timeout: 300000,
             });
-        }   
-    },
- 
+
+    	       
+    },//handler
 });
-
-
-customization.register(AccountEditView,{module: 'Accounts'});
-
-module.exports = AccountEditView;
-

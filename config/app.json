@@ -26,6 +26,13 @@
                 "supportEmail": "support@sao-crm.com",
                 "copyrightText": "Copyright © 2018 SAO-CRMCRM Inc. All Rights Reserved.",
                 "trademarkText": "SAO-CRM and SAO-CRMCRM are trademarks owned by SAO-CRMCRM Inc. All other trademarks are the property of their respective owners."
+            },
+            "ui": {
+                "icons": {
+                    "actions": {
+                        "location": "icon icon-location-arrow"
+                    }
+                }
             }
         }
     },

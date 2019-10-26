@@ -17,7 +17,11 @@ const CustomQuoteEditView = customization.extend(QuotesEditView, {
         self = this;
         if(this.model.get('gps_latitud_c') == undefined || this.model.get('gps_latitud_c')==''){
 
-            app.alert.show('getLatLng', {level: 'process',title: 'Obteniendo Ubicación...'});
+            app.alert.show('getLatLng', {
+              level: 'load',
+              closeable: false,
+              messages: 'Cargando, por favor espere',
+            });
 
             geolocation.getCurrentPosition({
               successCb: (position) => {
@@ -26,6 +30,7 @@ const CustomQuoteEditView = customization.extend(QuotesEditView, {
                   gps_latitud_c:  position.coords.latitude,
                   gps_longitud_c: position.coords.longitude,
                 }, { silent: true });
+                /*
                 self.model.save({
                     //check_in_address_c: address,
                 }, {
@@ -38,11 +43,16 @@ const CustomQuoteEditView = customization.extend(QuotesEditView, {
                         // Close the alert when save operation completes
                     }
                 });
+                */
               },
               errorCb: (errCode, errMessage) => {
                 app.alert.dismiss('getLatLng');
-                app.logger.debug(`Ubicación no disponible: ${errCode} - ${errMessage}`);
-                dialog.showAlert(errMessage);
+                app.alert.show('getLatLngError', {
+                  level: 'error',
+                  autoClose: true,
+                messages: 'No se ha podido obtener la ubicación',
+                });
+                
               },
               enableHighAccuracy: false,
               timeout: 300000,
