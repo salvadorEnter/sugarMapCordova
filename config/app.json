@@ -30,7 +30,8 @@
             "ui": {
                 "icons": {
                     "actions": {
-                        "location": "icon icon-location-arrow"
+                        "location": "icon icon-location-arrow",
+                        "location-view": "icon icon-map-marker"
                     }
                 }
             }
