@@ -59,7 +59,7 @@ let LocationsView = customization.extend(NomadView, {
         self=this;
 
         var params = {
-                'fields':'id,name,quick_contact_c,business_type_c,account_type,assigned_user_id,assigned_user_name,gps_latitud_c,gps_longitud_c,visit_status_c',
+                'fields':'id,name,quick_contact_c,business_type_c,account_type,assigned_user_id,assigned_user_name,gps_latitud_c,gps_longitud_c,visit_status_c,estrellas_c,photography_c',
                 'order_by':'date_modified:DESC',
                 'max_num':-1
             };
@@ -76,16 +76,10 @@ let LocationsView = customization.extend(NomadView, {
                 success: data => {
 
                     self.defCuentas=data.records;
-
+                    var contextoApiCuentas=this;
+                    //Se establece height dinámicamente, con base a la altura de la ventana
+                    document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
                     var mapDiv = document.getElementById("map");
-
-                    /*
-                    var map = plugin.google.maps.Map.getMap(mapDiv,{
-                        'camera': {
-                            'latLng': {"lat": 19.4326018, "lng": -99.13320490000001},
-                            'zoom': 7
-                            }
-                    });*/
 
                     var map=plugin.google.maps.Map.getMap(mapDiv,{
                         'camera': {
@@ -94,6 +88,10 @@ let LocationsView = customization.extend(NomadView, {
                         });
 
                     if(data.records.length>0){
+
+                        //Inicializando infowindow
+                        var infowindow = new plugin.google.maps.HtmlInfoWindow();
+
                         // Add markers
                         var bounds = [];
                         for(var i=0;i<data.records.length;i++){
@@ -134,9 +132,65 @@ let LocationsView = customization.extend(NomadView, {
                                     'icon': {
                                         'url': icono
                                     }
-                                }, function(marker) {
-                                    // Show the infoWindow
-                                    marker.showInfoWindow();
+                                });
+
+                                marker.on(plugin.google.maps.event.MARKER_CLICK, function(markers, info) {
+
+                                    document.getElementById("map").setAttribute("style", "width: 100%;height: 300px");
+                                    var idCuenta=info.getOptions().title;
+                                    var definicionCuenta=self.search(idCuenta, self.defCuentas);
+
+                                    /*<img id="lugar_cuenta" src="https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png">
+                                    <img id="lugar_cuenta" src="https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png">*/
+                                    if(definicionCuenta.photography_c != ""){
+
+                                        var urlImage=self.generarURLImage('Accounts', definicionCuenta.id, 'photography_c',definicionCuenta.photography_c);
+                                        $('#imageSection').html('<img id="lugar_cuenta" src="'+urlImage+'">');
+                                    }else{
+                                        $('#imageSection').html('<img id="lugar_cuenta" src="img/defaultImageMap.png">');
+                                    }
+                                    
+                                    var contenido='<p><i class="icon icon-building-o"></i> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"> '+definicionCuenta.name+'</a></p>'+
+                                    '<p><i class="icon icon-user-o"></i> Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                    '<p><i class="icondefault icon icon-building"></i> Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                    '<p><i class="icondefault icon icon-th"></i> Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>';
+
+                                    $('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
+
+                                    //Llenando sección con las estrellas
+                                    var estrellas=definicionCuenta.estrellas_c;
+                                    if(estrellas=="" || estrellas ==0){
+                                        var contenidoEstrellas='<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">';
+
+                                        $('#star_container').html(contenidoEstrellas);
+                                    }else{
+
+                                        var contenidoEstrellas='';
+
+                                        for(var i=0;i<estrellas;i++){
+                                            contenidoEstrellas+='<img style="margin: 0px 15px 15px 0px;" src="img/estrella.png" width="25">';
+                                        }
+                                        var estrellas_restantes= 5-estrellas;
+                                        if(estrellas>0){
+                                            for(var i=0;i<estrellas_restantes;i++){
+                                                contenidoEstrellas+='<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">';
+                                            }
+                                        }
+
+                                        $('#star_container').html(contenidoEstrellas);
+                                    }
+
+                                    $('#section_info').show();
+                                    $('#section_info').html(contenido);
+
+                                    //infowindow.setContent(contenido);
+                                    //infowindow.open(this);
+                                    //this.trigger(plugin.google.maps.event.MARKER_CLICK);
+
                                 });
                             }//if lat lng
                         }//for
@@ -160,7 +214,25 @@ let LocationsView = customization.extend(NomadView, {
             });//App.api.call
     },//end getCuentas
 
+    search:function(key,defCuentas){
+        for(var i=0;i<defCuentas.length;i++){
+            if(defCuentas[i].id===key){
+            return defCuentas[i];
+            }
+        }
+    },
+
+    generarURLImage : function (module, id, field,_hash) {
+        var url = app.api.buildFileURL({
+            module : module,
+            id : id,
+            field : field 
+        }) + "&_hash=" + _hash;
+        return url;
+    },  
+
     onAfterRender(){
+        document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
         var mapDiv = document.getElementById("map");
 
         // Initialize the map plugin
