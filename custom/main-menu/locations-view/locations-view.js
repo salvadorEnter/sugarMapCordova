@@ -10,19 +10,13 @@ customization.registerMainMenuItem({
 
     iconKey: 'actions.location-view',
     rank: 0,
-    handler() {
-        app.controller.loadScreen({
-            isDynamic: true,
-            view: LocationsView,
-        });
-    },
-
+    route:'locations_view'
 });
 
 // Registrando nueva ruta citas_edit
 customization.registerRoutes([{
     name: 'locations',      // Uniquely identifies the route
-    steps: 'locations_steps',     // Route hash fragment: '#hello'
+    steps: 'locations_view',     // Route hash fragment: '#hello'
 
     handler(options) {
         app.controller.loadScreen({
@@ -38,13 +32,23 @@ let LocationsView = customization.extend(NomadView, {
     template: 'locations-view',
 
     defCuentas: null,
+
+    currentLatitud:null,
+    currentLng:null,
+
     // Configure the header
     headerConfig: {
         title: 'Ubicaciones',
         buttons: {
-            save: {label: 'Listo'},
-            cancel: {label: 'Regresar'},
+            //save: {label: 'Listo'},
+            /*cancel: {label: 'Regresar'},*/
+            mainMenu: true
         },
+    },
+
+    //Definición de eventos
+    events: {
+        'click #linkCuenta': 'navigateCuenta',
     },
 
     initialize(options) {
@@ -52,6 +56,7 @@ let LocationsView = customization.extend(NomadView, {
         this._super(options);
         this.defCuentas=[];
         this.getCuentas();
+        this.obtenerUbicacion();
     },
 
     getCuentas(){
@@ -140,20 +145,26 @@ let LocationsView = customization.extend(NomadView, {
                                     var idCuenta=info.getOptions().title;
                                     var definicionCuenta=self.search(idCuenta, self.defCuentas);
 
-                                    /*<img id="lugar_cuenta" src="https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png">
-                                    <img id="lugar_cuenta" src="https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png">*/
                                     if(definicionCuenta.photography_c != ""){
-
                                         var urlImage=self.generarURLImage('Accounts', definicionCuenta.id, 'photography_c',definicionCuenta.photography_c);
-                                        $('#imageSection').html('<img id="lugar_cuenta" src="'+urlImage+'">');
+
+                                        $('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="40%">');
                                     }else{
-                                        $('#imageSection').html('<img id="lugar_cuenta" src="img/defaultImageMap.png">');
+                                        $('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="img/defaultImageMap.png" width="40%">');
                                     }
                                     
-                                    var contenido='<p><i class="icon icon-building-o"></i> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"> '+definicionCuenta.name+'</a></p>'+
+                                    /*
+                                    var contenido='<p><i class="icon icon-building-o"></i> Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
                                     '<p><i class="icon icon-user-o"></i> Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
                                     '<p><i class="icondefault icon icon-building"></i> Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
                                     '<p><i class="icondefault icon icon-th"></i> Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>';
+                                    */
+
+                                    var contenido='<p>Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
+                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                                    '<p>Domicilio: '+definicionCuenta.id+'</p>';
 
                                     $('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
 
@@ -187,10 +198,6 @@ let LocationsView = customization.extend(NomadView, {
                                     $('#section_info').show();
                                     $('#section_info').html(contenido);
 
-                                    //infowindow.setContent(contenido);
-                                    //infowindow.open(this);
-                                    //this.trigger(plugin.google.maps.event.MARKER_CLICK);
-
                                 });
                             }//if lat lng
                         }//for
@@ -213,6 +220,62 @@ let LocationsView = customization.extend(NomadView, {
                 },
             });//App.api.call
     },//end getCuentas
+
+    obtenerUbicacion(){
+        self=this;
+
+         app.alert.show('getLatLng', {
+              level: 'load',
+              closeable: false,
+              messages: 'Cargando, por favor espere',
+            });
+        geolocation.getCurrentPosition({
+              successCb: (position) => {
+                app.alert.dismiss('getLatLng');
+
+                self.currentLatitud=position.coords.latitude;
+                self.currentLng=position.coords.longitude;
+                document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
+                    var mapDiv = document.getElementById("map");
+
+                    var map=plugin.google.maps.Map.getMap(mapDiv,{
+                        'camera': {
+                            'zoom': 7
+                            }
+                        });
+
+                    var currentLocationMarker = map.addMarker({
+                                    'position': {"lat":self.currentLatitud,"lng":self.currentLng},
+                                    'title': 'Usted está aquí',
+                                    'icon': {
+                                        'url': 'img/iconCurrentLocation.png'
+                                    }
+                                });
+
+                        // Show the infoWindow
+                    currentLocationMarker.showInfoWindow();
+              },
+              errorCb: (errCode, errMessage) => {
+                app.alert.dismiss('getLatLng');
+                app.alert.show('getLatLngError', {
+                    level: 'error',
+                    autoClose: true,
+                    messages: 'No se ha podido obtener la ubicación',
+                });
+              },
+              enableHighAccuracy: false,
+              timeout: 300000,
+        });
+
+    },
+
+    navigateCuenta:function(evt){
+
+        var idCuenta=$(evt.currentTarget).siblings('input').val();
+
+        app.controller.navigate('Accounts/'+idCuenta);
+
+    },
 
     search:function(key,defCuentas){
         for(var i=0;i<defCuentas.length;i++){
