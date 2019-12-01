@@ -49,6 +49,7 @@ let LocationsView = customization.extend(NomadView, {
     //Definición de eventos
     events: {
         'click #linkCuenta': 'navigateCuenta',
+        'click .tablinks':'openTab'
     },
 
     initialize(options) {
@@ -69,7 +70,7 @@ let LocationsView = customization.extend(NomadView, {
                 'max_num':-1
             };
 
-        var url = app.api.buildURL("Accounts", '', {}, params);
+        var url = app.api.buildURL("GetAccountsForMap", '', {}, {});
 
         app.alert.show('accounts_load', {
                 level: 'load',
@@ -141,11 +142,11 @@ let LocationsView = customization.extend(NomadView, {
 
                                 marker.on(plugin.google.maps.event.MARKER_CLICK, function(markers, info) {
 
-                                    document.getElementById("map").setAttribute("style", "width: 100%;height: 300px");
+                                    document.getElementById("map").setAttribute("style", "width: 100%;height: 400px");
                                     var idCuenta=info.getOptions().title;
                                     var definicionCuenta=self.search(idCuenta, self.defCuentas);
 
-                                    if(definicionCuenta.photography_c != ""){
+                                    if(definicionCuenta.photography_c != "" && definicionCuenta.photography_c !=null){
                                         var urlImage=self.generarURLImage('Accounts', definicionCuenta.id, 'photography_c',definicionCuenta.photography_c);
 
                                         $('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="40%">');
@@ -160,17 +161,29 @@ let LocationsView = customization.extend(NomadView, {
                                     '<p><i class="icondefault icon icon-th"></i> Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>';
                                     */
 
+                                    var domicilio='';
+                                    if(definicionCuenta.calle != null && definicionCuenta.calle != "" && definicionCuenta.calle !=undefined &&
+                                    definicionCuenta.ciudad !=null && definicionCuenta.ciudad != "" && definicionCuenta.ciudad !=undefined){
+                                        domicilio='<b> '+definicionCuenta.calle+', '+definicionCuenta.ciudad+'<br>'+
+                                        definicionCuenta.estado+' ' +definicionCuenta.cp +'<br>'+
+                                        definicionCuenta.pais+'</b>';
+                                    }
                                     var contenido='<p>Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
                                                     '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
                                                     '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
                                                     '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
-                                                    '<p>Domicilio: '+definicionCuenta.id+'</p>';
+                                                    '<p>Domicilio: '+domicilio+'</p>';
 
                                     $('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
 
+                                    var contenidoUsuario='<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
+                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+' "target="_blank">'+definicionCuenta.reporta +'</a></p>';
+
                                     //Llenando sección con las estrellas
                                     var estrellas=definicionCuenta.estrellas_c;
-                                    if(estrellas=="" || estrellas ==0){
+                                    if(estrellas=="" || estrellas ==0 || estrellas ==null){
                                         var contenidoEstrellas='<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
                                         '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
                                         '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
@@ -197,6 +210,8 @@ let LocationsView = customization.extend(NomadView, {
 
                                     $('#section_info').show();
                                     $('#section_info').html(contenido);
+
+                                    $('#contenidoUsuario').html(contenidoUsuario);
 
                                 });
                             }//if lat lng
@@ -274,6 +289,41 @@ let LocationsView = customization.extend(NomadView, {
         var idCuenta=$(evt.currentTarget).siblings('input').val();
 
         app.controller.navigate('Accounts/'+idCuenta);
+
+    },
+
+    openTab:function(evt){
+        var pestana=$(evt.currentTarget).text();
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        $(evt.currentTarget).attr('style','background-color:#bfbbbb');
+        $(evt.currentTarget).siblings().attr('style',"")
+        /*
+        for (i = 0; i < tabcontent.length; i++) {
+            if(tabcontent[i].id != "Cuenta"){
+                tabcontent[i].style.display = "none";
+            }
+            
+        }*/
+        switch(pestana){
+            case "Cuenta":
+                $('#Cuenta').show();
+                $('#Usuario').hide();
+            break;
+
+            case "Usuario":
+                $('#Usuario').show();
+                $('#Cuenta').hide();
+            break;
+
+        }//switch
+        
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(pestana).style.display = "block";
+        evt.currentTarget.className += " active";
 
     },
 
