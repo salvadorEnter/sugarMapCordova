@@ -140,26 +140,26 @@ let LocationsView = customization.extend(NomadView, {
                                     }
                                 });
 
+                                marker.on(plugin.google.maps.event.INFO_CLICK, function() {
+                                    // Hide the infoWindow
+                                    marker.hideInfoWindow();
+                                });
+
                                 marker.on(plugin.google.maps.event.MARKER_CLICK, function(markers, info) {
 
-                                    document.getElementById("map").setAttribute("style", "width: 100%;height: 400px");
+                                    //document.getElementById("map").setAttribute("style", "width: 100%;height: 400px");
+                                    document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
                                     var idCuenta=info.getOptions().title;
                                     var definicionCuenta=self.search(idCuenta, self.defCuentas);
-
+                                    var urlImage='';
                                     if(definicionCuenta.photography_c != "" && definicionCuenta.photography_c !=null){
-                                        var urlImage=self.generarURLImage('Accounts', definicionCuenta.id, 'photography_c',definicionCuenta.photography_c);
+                                        urlImage=self.generarURLImage('Accounts', definicionCuenta.id, 'photography_c',definicionCuenta.photography_c);
 
-                                        $('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="40%">');
+                                        //$('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="40%">');
                                     }else{
-                                        $('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="img/defaultImageMap.png" width="40%">');
+                                        //$('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="img/defaultImageMap.png" width="40%">');
+                                        urlImage='img/sugar_crm_icon.png';
                                     }
-                                    
-                                    /*
-                                    var contenido='<p><i class="icon icon-building-o"></i> Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
-                                    '<p><i class="icon icon-user-o"></i> Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
-                                    '<p><i class="icondefault icon icon-building"></i> Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
-                                    '<p><i class="icondefault icon icon-th"></i> Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>';
-                                    */
 
                                     var domicilio='';
                                     if(definicionCuenta.calle != null && definicionCuenta.calle != "" && definicionCuenta.calle !=undefined &&
@@ -174,7 +174,7 @@ let LocationsView = customization.extend(NomadView, {
                                                     '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
                                                     '<p>Domicilio: '+domicilio+'</p>';
 
-                                    $('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
+                                    //$('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
 
                                     var contenidoUsuario='<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
                                                     '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
@@ -190,7 +190,7 @@ let LocationsView = customization.extend(NomadView, {
                                         '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
                                         '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">';
 
-                                        $('#star_container').html(contenidoEstrellas);
+                                        //$('#star_container').html(contenidoEstrellas);
                                     }else{
 
                                         var contenidoEstrellas='';
@@ -205,13 +205,89 @@ let LocationsView = customization.extend(NomadView, {
                                             }
                                         }
 
-                                        $('#star_container').html(contenidoEstrellas);
+                                        //$('#star_container').html(contenidoEstrellas);
                                     }
 
-                                    $('#section_info').show();
-                                    $('#section_info').html(contenido);
+                                    //$('#section_info').show();
+                                    //$('#section_info').html(contenido);
 
-                                    $('#contenidoUsuario').html(contenidoUsuario);
+                                    //$('#contenidoUsuario').html(contenidoUsuario);
+                                    // var urlImage=self.generarURLImage('Accounts', definicionCuenta.id, 'photography_c',definicionCuenta.photography_c);
+                                    //$('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="40%">');
+                                    //$('#imageSection').html('<img style="float: left; margin: 0px 15px 15px 0px;" src="img/defaultImageMap.png" width="40%">');
+                                    /*
+                                    var contenidoInfoWindow='<div class="container" style="width:300px; height:300px;">'+
+                                            '<ul class="nav nav-tabs">'+
+                                                '<li class="active">'+
+                                                    '<a data-toggle="tab" href="#menu1">'+
+                                                        'Información de Cuenta'+
+                                                    '</a>'+
+                                                '</li>'+
+                                                '<li>'+
+                                                    '<a data-toggle="tab" href="#menu2">'+
+                                                        'Usuario'+
+                                                    '</a>'+
+                                                '</li>'+
+                                            '</ul>'+
+                                            '<div class="tab-content">'+
+                                                '<div id="menu1" class="tab-pane fade in active">'+
+                                                    '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImageIw+'" width="100">'+
+                                                    '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
+                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                                    '<p>Domicilio:'+domicilio+'</p>'+
+                                                '</div>'+
+                                                '<div id="menu2" class="tab-pane fade">'+
+                                                    '<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
+                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>';
+                                        */
+
+                                        var contenidoInfoWindow='<div class="tab" style="width: 330px;">'+
+                                        '<button class="tablinks" style="background-color:#bfbbbb">Cuenta</button>'+
+                                        '<button class="tablinks">Usuario</button>'+
+                                        '<button class="tablinks">Analiticos</button>'+
+                                        '</div>'+
+                                        '<div id="Cuenta" class="tabcontent">'+
+                                            '<div id="contenidoCuenta" style="padding: 10px;">'+
+                                                    '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="100">'+
+                                                    '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
+                                                    /*
+                                                    '<div>'+
+                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
+                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'
+                                                    '</div>'+
+                                                    */
+                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                                    '<p>Domicilio:'+domicilio+'</p>'+            
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div id="Usuario" class="tabcontent" style="display:none">'+
+                                            '<div id="contenidoUsuario" style="padding: 10px;">'+
+                                                    '<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
+                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div id="Analiticos" class="tabcontent" style="display:none">'+
+                                            '<div id="contenidoAnaliticos" style="padding: 10px;">'+
+                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/snapshot.png" width="300px">'+
+                                            '</div>'+
+                                        '</div>';
+
+                                    infowindow.setContent(contenidoInfoWindow);
+                                    infowindow.open(this);
 
                                 });
                             }//if lat lng
@@ -298,32 +374,35 @@ let LocationsView = customization.extend(NomadView, {
         tabcontent = document.getElementsByClassName("tabcontent");
         $(evt.currentTarget).attr('style','background-color:#bfbbbb');
         $(evt.currentTarget).siblings().attr('style',"")
-        /*
-        for (i = 0; i < tabcontent.length; i++) {
-            if(tabcontent[i].id != "Cuenta"){
-                tabcontent[i].style.display = "none";
-            }
-            
-        }*/
         switch(pestana){
             case "Cuenta":
                 $('#Cuenta').show();
                 $('#Usuario').hide();
+                $('#Analiticos').hide();
             break;
 
             case "Usuario":
                 $('#Usuario').show();
                 $('#Cuenta').hide();
+                $('#Analiticos').hide();
+            break;
+
+            case "Analiticos":
+                $('#Analiticos').show();
+                $('#Cuenta').hide();
+                $('#Usuario').hide();
             break;
 
         }//switch
         
+        /*
         tablinks = document.getElementsByClassName("tablinks");
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
         document.getElementById(pestana).style.display = "block";
         evt.currentTarget.className += " active";
+        */
 
     },
 
