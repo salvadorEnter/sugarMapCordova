@@ -1,0 +1,79 @@
+<div class="box__edit {{#if isReadOnly}}box__edit_readonly{{/if}}">
+    <div class="scroll">
+        <div class="pad">
+            <!-- Módulos disponibles-->
+            <div class="field field--enum fieldModule">
+                <label class="field__label">Módulos</label>
+                <div class="field__controls">
+                    <select name="module_list">
+                        <option value="1">Cuentas</option>  
+                    </select>
+                    <i class="icondefault icon icon-caret-down selectArrow-icon"></i>
+                </div>
+
+                <!-- Campos disponibles para mostrar en columnas de reporte-->
+             <!--   
+                <div class="field fast-click-highlighted">
+                    <label class="field__label">Columnas visibles en reporte</label>
+                    <div class="field__controls">
+                        <div class="multienum-list">
+                            <span class="multienum-list__label" item-id="item1" >value1 <i class="icondefault icon icon-remove inert multienum-list__remove"></i>
+                            </span>
+                            <span class="multienum-list__label" item-id="item2" >value2 <i class="icondefault icon icon-remove inert multienum-list__remove"></i>
+                            </span>
+                            <span class="multienum-list__label" item-id="item3" >value3 <i class="icondefault icon icon-remove inert multienum-list__remove"></i>
+                            </span> 
+                        </div>
+                    </div>
+                </div>
+            -->
+
+                <div class="field field--enum columnsAvailable">
+                    <label class="field__label">Columnas visibles en reporte</label>
+                    <div class="field__controls">
+                        <select name="columnas_visibles">
+                            {{#each campos_disponibles}}
+                            <!--<option value="{{nombre}}">{{etiqueta}}</option>-->
+                            <option value="{{nombre}}">{{etiqueta}}</option>
+                            {{/each}}
+                        </select>
+                        <i class="icondefault icon icon-caret-down selectArrow-icon"></i>
+                    </div>
+                </div>
+
+                <!--Div para concatenar las columnas seleccionadas para mostrar en reporte-->
+                <div class="selectedColumnsReport field">
+
+                </div>
+
+
+                <!-- Campos disponibles para filtro -->
+                <div class="field field--enum fieldsAvailable">
+                    <label class="field__label">Campos</label>
+                    <div class="field__controls">
+                        <select name="available_fields">
+                            {{#each campos_disponibles}}
+                            <!--<option value="{{nombre}}">{{etiqueta}}</option>-->
+                            <option value="{{nombre}}">{{etiqueta}}</option>
+                            {{/each}}
+                        </select>
+                        <i class="icondefault icon icon-caret-down selectArrow-icon"></i>
+                    </div>
+                </div>
+
+                <!--Div para concatenar campos seleccionados para lanzar el filtro-->
+                <div class="selectedFieldsFilter">
+
+                </div>
+
+        <div class="edit__footer">
+            <div class="btn btn--primary btnGenerar disabled" style="pointer-events:none">Generar Reporte</div>
+        </div>
+
+        <div class="edit__footer">
+            <a id="downloadReport" href="{{serverURL}}/custom/report.pdf" class="downloadReport hide" download="report.pdf">Descargar Reporte</a>
+        </div>
+             
+            </div><!-- pad-->
+        </div><!-- scroll-->
+</div><!-- box__edit-->

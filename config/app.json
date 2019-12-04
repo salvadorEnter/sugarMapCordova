@@ -31,7 +31,8 @@
                 "icons": {
                     "actions": {
                         "location": "icon icon-location-arrow",
-                        "location-view": "icon icon-map-marker"
+                        "location-view": "icon icon-map-marker",
+                        "module": "icon icon-table"
                     }
                 }
             }
