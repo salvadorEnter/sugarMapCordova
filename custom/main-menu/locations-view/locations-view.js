@@ -183,27 +183,13 @@ let LocationsView = customization.extend(NomadView, {
 
                                     //Llenando sección con las estrellas
                                     var estrellas=definicionCuenta.estrellas_c;
+                                    var contenidoEstrellas='';
                                     if(estrellas=="" || estrellas ==0 || estrellas ==null){
-                                        var contenidoEstrellas='<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                        '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">';
-
+                                        contenidoEstrellas='<img style="" src="img/0_estrellas.png" width="100">';
                                         //$('#star_container').html(contenidoEstrellas);
                                     }else{
 
-                                        var contenidoEstrellas='';
-
-                                        for(var i=0;i<estrellas;i++){
-                                            contenidoEstrellas+='<img style="margin: 0px 15px 15px 0px;" src="img/estrella.png" width="25">';
-                                        }
-                                        var estrellas_restantes= 5-estrellas;
-                                        if(estrellas>0){
-                                            for(var i=0;i<estrellas_restantes;i++){
-                                                contenidoEstrellas+='<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">';
-                                            }
-                                        }
+                                        contenidoEstrellas='<img style="" src="img/'+estrellas+'_estrellas.png" width="100">';
 
                                         //$('#star_container').html(contenidoEstrellas);
                                     }
@@ -247,25 +233,17 @@ let LocationsView = customization.extend(NomadView, {
                                             '</div>'+
                                         '</div>';
                                         */
-
-                                        var contenidoInfoWindow='<div class="tab" style="width: 330px;">'+
-                                        '<button class="tablinks" style="background-color:#bfbbbb">Cuenta</button>'+
-                                        '<button class="tablinks">Usuario</button>'+
-                                        '<button class="tablinks">Analiticos</button>'+
+                                        
+                                        var contenidoInfoWindow='<div class="tab" style="width: 330px;border-bottom: 1px solid #ddd">'+
+                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;">Cuenta</button>'+
+                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Usuario</button>'+
+                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Analiticos</button>'+
                                         '</div>'+
                                         '<div id="Cuenta" class="tabcontent">'+
                                             '<div id="contenidoCuenta" style="padding: 10px;">'+
                                                     '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="100">'+
                                                     '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
-                                                    /*
-                                                    '<div>'+
-                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'+
-                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/estrella_blanca.png" width="25">'
-                                                    '</div>'+
-                                                    */
+                                                    contenidoEstrellas+
                                                     '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
                                                     '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
                                                     '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
@@ -285,7 +263,7 @@ let LocationsView = customization.extend(NomadView, {
                                                     '<img style="margin: 0px 15px 15px 0px;" src="img/snapshot.png" width="300px">'+
                                             '</div>'+
                                         '</div>';
-
+                                        
                                     infowindow.setContent(contenidoInfoWindow);
                                     infowindow.open(this);
 
@@ -372,8 +350,8 @@ let LocationsView = customization.extend(NomadView, {
         var pestana=$(evt.currentTarget).text();
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
-        $(evt.currentTarget).attr('style','background-color:#bfbbbb');
-        $(evt.currentTarget).siblings().attr('style',"")
+        $(evt.currentTarget).attr('style','background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;');
+        $(evt.currentTarget).siblings().attr('style',"background-color:#ffffff;color:#337ab7;")
         switch(pestana){
             case "Cuenta":
                 $('#Cuenta').show();
