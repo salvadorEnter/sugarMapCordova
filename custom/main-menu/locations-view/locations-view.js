@@ -105,21 +105,24 @@ let LocationsView = customization.extend(NomadView, {
                             if(data.records[i].gps_latitud_c !="" && data.records[i].gps_longitud_c != ""){
 
                                  var icono='';
-                                 switch(data.records[i].visit_status_c){
+                                 switch(data.records[i].visit_c){
                                     
-                                    case "Planificado":
+                                    case "Planned":
                                         icono = "img/icon-negro_.png";
                                     break;
                                     
-                                    case "Realizado":
+                                    case "Done":
                                         icono = "img/icon-verde_.png";
                                     break;
                                     
-                                    case "Reprogramado":
+                                    case "Rescheduled":
                                         icono = "img/icon-azul_.png";
                                     break;
-                                    case "Cancelado":
+                                    case "Canceled":
                                         icono = "img/icon-rojo_.png";
+                                    break;
+                                    case "Pending":
+                                        icono = "img/icon-amarillo_.png";
                                     break;
 
                                     case "":
@@ -182,7 +185,7 @@ let LocationsView = customization.extend(NomadView, {
                                                     '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+' "target="_blank">'+definicionCuenta.reporta +'</a></p>';
 
                                     //Llenando sección con las estrellas
-                                    var estrellas=definicionCuenta.estrellas_c;
+                                    var estrellas=definicionCuenta.rate_c;
                                     var contenidoEstrellas='';
                                     if(estrellas=="" || estrellas ==0 || estrellas ==null){
                                         contenidoEstrellas='<img style="" src="img/0_estrellas.png" width="100">';
@@ -237,7 +240,6 @@ let LocationsView = customization.extend(NomadView, {
                                         var contenidoInfoWindow='<div class="tab" style="width: 330px;border-bottom: 1px solid #ddd">'+
                                         '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;">Cuenta</button>'+
                                         '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Usuario</button>'+
-                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Analiticos</button>'+
                                         '</div>'+
                                         '<div id="Cuenta" class="tabcontent">'+
                                             '<div id="contenidoCuenta" style="padding: 10px;">'+
@@ -256,11 +258,6 @@ let LocationsView = customization.extend(NomadView, {
                                                     '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
                                                     '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
                                                     '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
-                                            '</div>'+
-                                        '</div>'+
-                                        '<div id="Analiticos" class="tabcontent" style="display:none">'+
-                                            '<div id="contenidoAnaliticos" style="padding: 10px;">'+
-                                                    '<img style="margin: 0px 15px 15px 0px;" src="img/snapshot.png" width="300px">'+
                                             '</div>'+
                                         '</div>';
                                         
@@ -356,19 +353,13 @@ let LocationsView = customization.extend(NomadView, {
             case "Cuenta":
                 $('#Cuenta').show();
                 $('#Usuario').hide();
-                $('#Analiticos').hide();
+                //$('#Analiticos').hide();
             break;
 
             case "Usuario":
                 $('#Usuario').show();
                 $('#Cuenta').hide();
-                $('#Analiticos').hide();
-            break;
-
-            case "Analiticos":
-                $('#Analiticos').show();
-                $('#Cuenta').hide();
-                $('#Usuario').hide();
+                //$('#Analiticos').hide();
             break;
 
         }//switch

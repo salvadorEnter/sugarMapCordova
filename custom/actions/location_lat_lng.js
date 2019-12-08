@@ -4,7 +4,7 @@ const dialog = require('%app.core%/dialog');
 const geolocation = require('%app.core%/geolocation');
 
 customization.registerRecordAction({
-    modules: ['Accounts','Quotes'],
+    modules: ['Accounts','Quotes','Meetings'],
     name: 'location',
     types: ['context-menu', 'toolbar'],
     label: 'Ubicación',
