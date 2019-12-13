@@ -40,20 +40,112 @@ customization.registerRecordAction({
                   gps_latitud_c:  position.coords.latitude,
                   gps_longitud_c: position.coords.longitude,
                 }, { silent: true });
-                
-                self.elmodelo.save({
-                }, {
+
+                if(self.elmodelo.module=='Accounts' && (self.elmodelo.get('billing_address_street')=='' || self.elmodelo.get('billing_address_street')==undefined) &&
+                  (self.elmodelo.get('billing_address_city')=='' || self.elmodelo.get('billing_address_city')==undefined) &&
+                  (self.elmodelo.get('billing_address_state')=='' || self.elmodelo.get('billing_address_state')==undefined) &&
+                  (self.elmodelo.get('billing_address_country')=='' || self.elmodelo.get('billing_address_country')==undefined) &&
+                  (self.elmodelo.get('billing_address_postalcode')=='' || self.elmodelo.get('billing_address_postalcode')==undefined)
+                  ){
+
+                  //Llamar a api para obtener dirección a partir de lat y long
+                var lat=position.coords.latitude;
+                var lng=position.coords.longitude;
+                var urlGeocode='https://maps.googleapis.com/maps/api/geocode/json?latlng='+lat+','+lng+'&key=AIzaSyCVh5NcPi98UVoKI6wTVpiVBDZOht4rltc';
+                $.get(urlGeocode, function(data, status){
+                  if(status=="success"){
+                    if(data.results.length>0){
+
+                      var cant_componentes=data.results[0].address_components.length;
+                      if(cant_componentes>0){
+                        var calle='';
+                        var ciudad='';
+                        var estado='';
+                        var pais='';
+                        var cp='';
+
+                        for (var i = 0; i < cant_componentes ; i++) {
+
+                          //Armando call
+                          if(data.results[0].address_components[i].types.includes('premise')){
+                            calle+=data.results[0].address_components[i].long_name;
+                          }
+                          if(data.results[0].address_components[i].types.includes('route')){
+                            calle+=' '+data.results[0].address_components[i].long_name;
+                          }
+                          if(data.results[0].address_components[i].types.includes('street_number')){
+                            calle+=' '+data.results[0].address_components[i].long_name;
+                          }
+
+                          //Armando ciudad
+                          if(data.results[0].address_components[i].types.includes('locality')){
+                            ciudad+=data.results[0].address_components[i].long_name;
+                          }
+
+                          //Armando estado
+                          if(data.results[0].address_components[i].types.includes('administrative_area_level_1')){
+                            estado+=data.results[0].address_components[i].long_name;
+                          }
+
+                          //Armando pais
+                          if(data.results[0].address_components[i].types.includes('country')){
+                            pais+=data.results[0].address_components[i].long_name;
+                          }
+
+                          //Armando pais
+                          if(data.results[0].address_components[i].types.includes('postal_code')){
+                            cp+=data.results[0].address_components[i].long_name;
+                          }
+
+                        }//end for
+
+                        self.elmodelo.set({
+                          billing_address_street: calle,
+                          billing_address_city: ciudad,
+                          billing_address_state: estado,
+                          billing_address_country: pais,
+                          billing_address_postalcode: cp,
+                          }, { silent: true });
+
+                          self.elmodelo.save({}, {
+                          // Pass a list of fields to be sent to the server
+                              fields: [
+                                'gps_latitud_c',
+                                'gps_longitud_c',
+                                'billing_address_street',
+                                'billing_address_city',
+                                'billing_address_state',
+                                'billing_address_country',
+                                'billing_address_postalcode'
+                              ],
+                              complete: () => {
+                                  // Close the alert when save operation completes
+                              }
+                          });
+
+                      }
+                    }
+
+                  }
+                });
+
+                }else{
+
+                  //Solo guardar lat y lng
+                  self.elmodelo.save({}, {
                     // Pass a list of fields to be sent to the server
                     fields: [
                       'gps_latitud_c',
                       'gps_longitud_c',
                     ],
                     complete: () => {
-                        // Close the alert when save operation completes
+                      // Close the alert when save operation completes
                     }
-                });
+                  });
+
+                }//fin else
                 
-              },
+              },//fin successCb
               errorCb: (errCode, errMessage) => {
                 app.alert.dismiss('getLatLng');
                 app.alert.show('getLatLngError', {
