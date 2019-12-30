@@ -1,4 +1,25 @@
 <div id="map">
+	<button class="buttonRound" style="border-radius: 100%;">Filtrar</button>
+	<div id="mySidenav" class="sidenav">
+		<a href="javascript:void(0)" class="closebtn">&times;</a>
+		<h2 style="text-align:center;">Filtrar por</h2>
+  		<div class="field field--enum field--onfocus" style="padding: 8px 8px 8px 32px;width: 70%;">
+  			<label class="field__label">Campos disponibles</label>
+  			<div class="field__controls">
+  				<select id="available_fields">
+  					{{#each campos_disponibles}}
+  					<option value="{{nombre}}">{{etiqueta}}</option>
+  					{{/each}}
+                </select>
+        		<i class="icondefault icon icon-caret-down selectArrow-icon"></i>
+    		</div>
+		</div>
+		<div id="filterSection">
+		</div>
+		<div class="edit__footer"style="text-align:center">
+            <div class="btn btn--primary disabled" style="pointer-events:none;">Aplicar</div>
+        </div>
+	</div>
 </div>
 
 <!--Sección de detalle -->

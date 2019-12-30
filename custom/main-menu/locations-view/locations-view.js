@@ -26,7 +26,7 @@ customization.registerRoutes([{
     }
 }]);
 
-//Definición de nueva vista para edición de Citas
+//Definición de nueva vista para edición de Ubicaciones
 let LocationsView = customization.extend(NomadView, {
     // Se especifica el nombre del template
     template: 'locations-view',
@@ -49,7 +49,13 @@ let LocationsView = customization.extend(NomadView, {
     //Definición de eventos
     events: {
         'click #linkCuenta': 'navigateCuenta',
-        'click .tablinks':'openTab'
+        'click .tablinks':'openTab',
+        'click .buttonRound':'openViewFilter',
+        'click .closebtn':'closeNav',
+        'change #available_fields':'onChangeFiltro',
+        'click .deleteField':'removerFiltro',
+        'change .operador':'setFieldValue',
+
     },
 
     initialize(options) {
@@ -58,6 +64,22 @@ let LocationsView = customization.extend(NomadView, {
         this.defCuentas=[];
         this.getCuentas();
         this.obtenerUbicacion();
+        this.campos_disponibles=[{'nombre':'','etiqueta':''}];
+        //Cargando el mapeo de opciones que se deben de cargar dependiendo al tipo de campo seleccionado
+        this.loadFilterOperators();
+        this._operatorsWithNoValues = ['$empty', '$not_empty'];
+        //Llenando dropdown con los campos disponibles para filtrar del módulo de Cuentas
+        this.campos=this.getFilterFields('Accounts');
+
+        for (var key in this.campos){
+            if(this.campos[key].type != undefined){
+                var opcion={
+                    'nombre':this.campos[key].name,
+                    'etiqueta':app.lang.get(this.campos[key].vname, 'Accounts')
+                };
+                this.campos_disponibles.push(opcion);
+            }
+        }
     },
 
     getCuentas(){
@@ -335,6 +357,202 @@ let LocationsView = customization.extend(NomadView, {
 
     },
 
+    loadFilterOperators:function(module="Accounts"){
+
+        //this.filterOperatorMap = app.metadata.getFilterOperators(module);
+        this.filterOperatorMap={
+            "email" : [
+            {"$equals" : "combinaciones exactas"},
+            {"$starts" : "empieza con"}
+            ],
+            "text" : [
+            {"$equals" : "combinaciones exactas"},
+            {"$starts" : "empieza con"}
+            ],
+            "textarea" : [
+            {"$equals" : "combinaciones exactas"},
+            {"$starts" : "empieza con"}
+            ],
+            "currency" : [
+            {"$equals" : "es igual a"},
+            {"$not_equals" : "no es igual a"},
+            {"$gt" : "es mayor que"},
+            {"$lt" : "es menor que"},
+            {"$gte" : "es mayor o igual que"},
+            {"$lte" : "es menor o igual que"},
+            {"$between" : "está entre"}
+            ],
+            "int" : [
+            {"$equals" : "es igual a"},
+            {"$not_equals" : "no es igual a"},
+            {"$in" : "es cualquiera de"},
+            {"$gt" : "es mayor que"},
+            {"$lt" : "es menor que"},
+            {"$gte" : "es mayor o igual que"},
+            {"$lte" : "es menor o igual que"},
+            {"$between" : "está entre"}
+            ],
+            "double" : [
+            {"$equals" : "es igual a"},
+            {"$not_equals" : "no es igual a"},
+            {"$gt" : "es mayor que"},
+            {"$lt" : "es menor que"},
+            {"$gte" : "es mayor o igual que"},
+            {"$lte" : "es menor o igual que"},
+            {"$between" : "está entre"}
+            ],
+            "float" : [
+            {"$equals" : "es igual a"},
+            {"$not_equals" : "no es igual a"},
+            {"$gt" : "es mayor que"},
+            {"$lt" : "es menor que"},
+            {"$gte" : "es mayor o igual que"},
+            {"$lte" : "es menor o igual que"},
+            {"$between" : "está entre"}
+            ],
+            "decimal" : [
+            {"$equals" : "es igual a"},
+            {"$not_equals" : "no es igual a"},
+            {"$gt" : "es mayor que"},
+            {"$lt" : "es menor que"},
+            {"$gte" : "es mayor o igual que"},
+            {"$lte" : "es menor o igual que"},
+            {"$between" : "está entre"},
+            ],
+            "date" : [
+            {"$equals" : "es igual a"},
+            {"$lt" : "antes"},
+            {"$gt" : "después"},
+            {"yesterday" : "ayer"},
+            {"today" : "hoy"},
+            {"tomorrow" : "mañana"},
+            {"last_7_days" : "últimos 7 días"},
+            {"next_7_days" : "próximos 7 días"},
+            {"last_30_days" : "últimos 30 días"},
+            {"next_30_days" : "próximos 30 días"},
+            {"last_month" : "último mes"},
+            {"this_month" : "este mes"},
+            {"next_month" : "próximo mes"},
+            {"last_year" : "último año"},
+            {"this_year" : "este año"},
+            {"next_year" : "próximo año"},
+            {"$dateBetween" : "está entre"},
+            ],
+            "datetime" : [
+            {"$starts" : "es igual a"},
+            {"$lte" : "antes"},
+            {"$gte" : "después"},
+            {"yesterday" : "ayer"},
+            {"today" : "hoy"},
+            {"tomorrow" : "mañana"},
+            {"last_7_days" : "últimos 7 días"},
+            {"next_7_days" : "próximos 7 días"},
+            {"last_30_days" : "últimos 30 días"},
+            {"next_30_days" : "próximos 30 días"},
+            {"last_month" : "último mes"},
+            {"this_month" : "este mes"},
+            {"next_month" : "próximo mes"},
+            {"last_year" : "último año"},
+            {"this_year" : "este año"},
+            {"next_year" : "próximo año"},
+            {"$dateBetween" : "está entre"}
+            ],
+            "datetimecombo" : [
+            {"$starts" : "es igual a"},
+            {"$lte" : "antes"},
+            {"$gte" : "después"},
+            {"yesterday" : "ayer"},
+            {"today" : "hoy"},
+            {"tomorrow" : "mañana"},
+            {"last_7_days" : "últimos 7 días"},
+            {"next_7_days" : "próximos 7 días"},
+            {"last_30_days" : "últimos 30 días"},
+            {"next_30_days" : "próximos 30 días"},
+            {"last_month" : "último mes"},
+            {"this_month" : "este mes"},
+            {"next_month" : "próximo mes"},
+            {"last_year" : "último año"},
+            {"this_year" : "este año"},
+            {"next_year" : "próximo año"},
+            {"$dateBetween" : "está entre"},
+            ],
+            "bool" : [
+            {"$equals" : "es"}
+            ],
+            "relate" : [
+            {"$in" : "es cualquiera de"},
+            {"$not_in" : "no es cualquiera de"},
+            ],
+            "teamset" : [
+            {"$in" : "es cualquiera de"},
+            {"$not_in" : "no es cualquiera de"}
+            ],
+            "phone" : [
+            {"$starts" : "empieza con"},
+            {"$equals" : "es"},
+            ],
+            "radioenum" : [
+            {"$equals" : "es"},
+            {"$not_equals" : "no es"},
+            ],
+            "parent" : [
+            {"$equals" : "es"},
+            ],
+            "tag" : [
+            {"$in" : "es cualquiera de"},
+            {"$not_in" : "no es cualquiera de"},
+            {"$empty" : "está vacío"},
+            {"$not_empty" : "no está vacío"}
+            ],
+            "multienum":[
+            {"$contains":"es cualquiera de"},
+            {"$not_contains" :"no es cualquiera de"}
+            ],
+            "enum":[ 
+            {"$in": "es cualquiera de"},
+            {"$not_in": "no es cualquiera de"},
+            {"$empty" : "está vacío"},
+            {"$not_empty": "no está vacío"}
+            ],
+            "varchar": [
+            {"$equals" : "combinaciones exactas"},
+            {"$starts": "empieza con"}
+            ],
+            "name" : [
+            {"$equals" : "combinaciones exactas"},
+            {"$starts" : "empieza con"}
+            ],    
+        }
+    },
+
+    /*
+    * Obtiene los campos disponibles para filtrar pertenecientes a un módulo en específico 
+    */
+    getFilterFields: function(moduleName) {
+        var moduleMeta = app.metadata.getModule(moduleName),
+        fieldMeta = moduleMeta.fields,
+        fields = {};
+        if (moduleMeta.filters) {
+            _.each(moduleMeta.filters, function(templateMeta) {
+                if (templateMeta.meta && templateMeta.meta.fields) {
+                    fields = _.extend(fields, templateMeta.meta.fields);
+                }
+            });
+        }
+
+        _.each(fields, function(fieldFilterDef, fieldName) {
+            var fieldMetaData = app.utils.deepCopy(fieldMeta[fieldName]);
+            if (_.isEmpty(fieldFilterDef)) {
+                fields[fieldName] = fieldMetaData || {};
+            } else {
+                fields[fieldName] = _.extend({name: fieldName}, fieldMetaData, fieldFilterDef);
+            }
+            delete fields[fieldName]['readonly'];
+        });
+
+        return fields;
+    },
+
     navigateCuenta:function(evt){
 
         var idCuenta=$(evt.currentTarget).siblings('input').val();
@@ -372,6 +590,159 @@ let LocationsView = customization.extend(NomadView, {
         document.getElementById(pestana).style.display = "block";
         evt.currentTarget.className += " active";
         */
+
+    },
+
+    openViewFilter:function(evt){
+
+        document.getElementById("mySidenav").style.width = "70%";
+    },
+
+    closeNav:function(){
+        document.getElementById("mySidenav").style.width = "0";
+    },
+
+    onChangeFiltro:function(e){
+
+        var campo=$(e.currentTarget).find('option:selected').text();
+        var nombre_campo=$(e.currentTarget).val();
+
+        var tipo=this.campos[nombre_campo].type;
+        var opciones='';
+
+        for(var i=0;i<this.filterOperatorMap[tipo].length;i++){
+
+            for(var clave in this.filterOperatorMap[tipo][i]){
+
+                var etiqueta_operador=App.lang.get(this.filterOperatorMap[tipo][i][clave],['Accounts','Filters']);
+                opciones+="<option value='"+clave+"'>"+etiqueta_operador+"</option>";
+
+            }
+        }
+
+        var divCampoFiltro='<div style="border: 1px solid #9aa5ad;'+
+  'border-radius: 16px;margin:10px" class="'+campo+' '+nombre_campo+'">'+
+  '<a href="javascript:void(0)" class="deleteField"">×</a>'+
+  '<h4 style="padding-left: 32px;">'+campo+'</h4>'+
+'<div class="field field--enum" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+    '<label class="field__label">Operador</label>'+
+    '<div class="field__controls">'+
+        '<select name="enum" class="operador">'+
+                opciones+
+        '</select>'+
+        '<i class="icondefault icon icon-caret-down selectArrow-icon"></i>'+
+    '</div>'+
+'</div>'+
+'</div>';
+
+        $('#filterSection').append(divCampoFiltro);
+
+        //Eliminando opción elegida para evitar crear un filtro con el mismo campo
+        $("#available_fields option[value='"+nombre_campo+"']").remove();
+
+        
+    },
+
+    buildFieldByType:function(type,operador){
+        var campo='';
+
+        if(type=='text' || type=='varchar' || type =='name'){
+
+            campo='<div class="field field--onfocus" style="padding: 8px 8px 30px 32px;width: 70%;">'+
+    '<label class="field__label">Valor</label>'+
+    '<div class="field__controls">'+
+        '<span class="input-wrapper">'+
+            '<input type="text" autocorrect="off" value="">'+
+            '<i class="icondefault icon icon-remove clear-button"></i>'+
+        '</span>'+
+    '</div>'+
+'</div>';
+
+        }else if(type=='enum'){
+
+            campo='<div class="field field--enum field--onfocus" style="padding: 8px 8px 30px 32px;width: 70%;">'+
+    '<label class="field__label">Valor</label>'+
+    '<div class="field__controls">'+
+        '<select name="enum">'+
+                '<option value="" selected=""></option>'+
+                '<option value="Draft">Draft</option>'+
+                '<option value="Negotiation">Negotiation</option>'+
+                '<option value="Delivered">Delivered</option>'+
+        '</select>'+
+        '<i class="icondefault icon icon-caret-down selectArrow-icon"></i>'+
+    '</div>'+
+'</div>';
+        }else if(operador=='$dateBetween'){
+
+            campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+    '<label class="field__label">Inicio</label>'+
+    '<div class="field__controls field__controls--flex">'+
+        '<span class="input-wrapper">'+
+            '<input type="date" autocorrect="off" value="" class="empty">'+
+        '</span>'+
+        '<div class="btn-group clear-button hide">'+
+            '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
+'</button>'+
+        '</div>'+
+    '</div>'+
+'</div>'+
+'<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+    '<label class="field__label">Fin</label>'+
+    '<div class="field__controls field__controls--flex">'+
+        '<span class="input-wrapper">'+
+            '<input type="date" autocorrect="off" value="" class="empty">'+
+        '</span>'+
+        '<div class="btn-group clear-button hide">'+
+            '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
+'</button>'+
+        '</div>'+
+    '</div>'+
+'</div>';
+
+        }else if(type=='date' || type=='datetime'){
+
+             campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+    '<label class="field__label">Valor</label>'+
+    '<div class="field__controls field__controls--flex">'+
+        '<span class="input-wrapper">'+
+            '<input type="date" autocorrect="off" value=""'+
+                'class="empty">'+
+        '</span>'+
+        '<div class="btn-group clear-button hide">'+
+            '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
+'</button>'+
+        '</div>'+
+    '</div>'+
+'</div>';
+        }
+
+        return campo;
+
+    },
+
+    removerFiltro:function(e){
+
+        //Añadir nuevamente a las opciones disponibles el item removido
+        var etiqueta=$(e.currentTarget).parent()[0].classList[0];
+        var valor=$(e.currentTarget).parent()[0].classList[1];
+
+        $("#available_fields option").eq(0).after($("<option></option>").val(valor).html(etiqueta));
+        $(e.currentTarget).parent().remove();
+
+    },
+
+
+    setFieldValue:function(e){
+
+        //Obtener el tipo de campo y el operador
+        var operador=$(e.currentTarget).val();
+        var nombre_campo=$(e.currentTarget).parent().parent().parent()[0].classList[1];
+
+        var tipo=this.campos[nombre_campo].type;
+
+        var campo=this.buildFieldByType(tipo,operador);
+
+        $(e.currentTarget).parent().parent().after(campo);
 
     },
 
