@@ -55,7 +55,7 @@ let LocationsView = customization.extend(NomadView, {
         'change #available_fields':'onChangeFiltro',
         'click .deleteField':'removerFiltro',
         'change .operador':'setFieldValue',
-
+        'click #fireSearch':'fireSearch',
     },
 
     initialize(options) {
@@ -619,9 +619,12 @@ let LocationsView = customization.extend(NomadView, {
 
             }
         }
-
+        /*
+        var etiqueta=$(e.currentTarget).parent().attr('field_label');
+        var valor=$(e.currentTarget).parent().attr('field_name');
+        */
         var divCampoFiltro='<div style="border: 1px solid #9aa5ad;'+
-  'border-radius: 16px;margin:10px" class="'+campo+' '+nombre_campo+'">'+
+  'border-radius: 16px;margin:10px" class="'+campo+' '+nombre_campo+' filterSection" field_label="'+campo+'" field_name="'+nombre_campo+'">'+
   '<a href="javascript:void(0)" class="deleteField"">×</a>'+
   '<h4 style="padding-left: 32px;">'+campo+'</h4>'+
 '<div class="field field--enum" style="padding: 8px 8px 8px 32px;width: 70%;">'+
@@ -637,13 +640,23 @@ let LocationsView = customization.extend(NomadView, {
 
         $('#filterSection').append(divCampoFiltro);
 
+        $('.operador').trigger('change');
+
+        //Habilitando botón para aplicar filtro
+        if($('.deleteField').length>0){
+
+            $('#fireSearch').removeClass('disabled');
+            $('#fireSearch').attr('style',"");
+
+        }
+
         //Eliminando opción elegida para evitar crear un filtro con el mismo campo
         $("#available_fields option[value='"+nombre_campo+"']").remove();
 
         
     },
 
-    buildFieldByType:function(type,operador){
+    buildFieldByType:function(type,operador,nombre_campo){
         var campo='';
 
         if(type=='text' || type=='varchar' || type =='name'){
@@ -652,7 +665,7 @@ let LocationsView = customization.extend(NomadView, {
     '<label class="field__label">Valor</label>'+
     '<div class="field__controls">'+
         '<span class="input-wrapper">'+
-            '<input type="text" autocorrect="off" value="">'+
+            '<input type="text" autocorrect="off" value="" class="field_value">'+
             '<i class="icondefault icon icon-remove clear-button"></i>'+
         '</span>'+
     '</div>'+
@@ -660,25 +673,39 @@ let LocationsView = customization.extend(NomadView, {
 
         }else if(type=='enum'){
 
-            campo='<div class="field field--enum field--onfocus" style="padding: 8px 8px 30px 32px;width: 70%;">'+
-    '<label class="field__label">Valor</label>'+
-    '<div class="field__controls">'+
-        '<select name="enum">'+
-                '<option value="" selected=""></option>'+
-                '<option value="Draft">Draft</option>'+
-                '<option value="Negotiation">Negotiation</option>'+
-                '<option value="Delivered">Delivered</option>'+
-        '</select>'+
-        '<i class="icondefault icon icon-caret-down selectArrow-icon"></i>'+
-    '</div>'+
-'</div>';
+            if(operador == '$empty' || operador == '$not_empty'){
+                campo='';
+            }else{
+
+                //Obteniendo la lista relacionada al campo para establecer los valores en el campo de valor
+                var nombre_lista=this.campos[nombre_campo].options;
+                var lista=App.lang.getAppListStrings(nombre_lista);
+                var strOpciones='';
+                for(var key in lista){
+
+                strOpciones+='<option value="'+key+'">'+lista[key]+'</option>';
+                }
+
+
+                campo='<div class="field field--enum field--onfocus" style="padding: 8px 8px 30px 32px;width: 70%;">'+
+                '<label class="field__label">Valor</label>'+
+                '<div class="field__controls">'+
+                    '<select name="enum" class="field_value">'+
+                        strOpciones+
+                    '</select>'+
+                '<i class="icondefault icon icon-caret-down selectArrow-icon"></i>'+
+                '</div>'+
+                '</div>';
+
+            }
+            
         }else if(operador=='$dateBetween'){
 
             campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
     '<label class="field__label">Inicio</label>'+
     '<div class="field__controls field__controls--flex">'+
         '<span class="input-wrapper">'+
-            '<input type="date" autocorrect="off" value="" class="empty">'+
+            '<input type="date" autocorrect="off" value="" class="empty field_value">'+
         '</span>'+
         '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
@@ -690,7 +717,7 @@ let LocationsView = customization.extend(NomadView, {
     '<label class="field__label">Fin</label>'+
     '<div class="field__controls field__controls--flex">'+
         '<span class="input-wrapper">'+
-            '<input type="date" autocorrect="off" value="" class="empty">'+
+            '<input type="date" autocorrect="off" value="" class="empty field_value">'+
         '</span>'+
         '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
@@ -705,7 +732,7 @@ let LocationsView = customization.extend(NomadView, {
     '<label class="field__label">Valor</label>'+
     '<div class="field__controls field__controls--flex">'+
         '<span class="input-wrapper">'+
-            '<input type="date" autocorrect="off" value=""'+
+            '<input type="date" autocorrect="off" value="" class="field_value"'+
                 'class="empty">'+
         '</span>'+
         '<div class="btn-group clear-button hide">'+
@@ -723,11 +750,22 @@ let LocationsView = customization.extend(NomadView, {
     removerFiltro:function(e){
 
         //Añadir nuevamente a las opciones disponibles el item removido
-        var etiqueta=$(e.currentTarget).parent()[0].classList[0];
-        var valor=$(e.currentTarget).parent()[0].classList[1];
+        //var etiqueta=$(e.currentTarget).parent()[0].classList[0];
+        //var valor=$(e.currentTarget).parent()[0].classList[1];
+        var etiqueta=$(e.currentTarget).parent().attr('field_label');
+        var valor=$(e.currentTarget).parent().attr('field_name'); 
 
         $("#available_fields option").eq(0).after($("<option></option>").val(valor).html(etiqueta));
         $(e.currentTarget).parent().remove();
+
+        //Habilitando botón para aplicar filtro
+        if($('.deleteField').length>0){
+            $('#fireSearch').removeClass('disabled');
+            $('#fireSearch').attr('style',"");
+        }else{
+            $('#fireSearch').addClass('disabled');
+            $('#fireSearch').attr('style',"pointer-events:none");
+        }
 
     },
 
@@ -736,13 +774,61 @@ let LocationsView = customization.extend(NomadView, {
 
         //Obtener el tipo de campo y el operador
         var operador=$(e.currentTarget).val();
-        var nombre_campo=$(e.currentTarget).parent().parent().parent()[0].classList[1];
+        //var nombre_campo=$(e.currentTarget).parent().parent().parent()[0].classList[1];
+        var nombre_campo=$(e.currentTarget).parent().parent().parent().attr('field_name');
 
         var tipo=this.campos[nombre_campo].type;
 
-        var campo=this.buildFieldByType(tipo,operador);
+        var campo=this.buildFieldByType(tipo,operador,nombre_campo);
 
+        //Antes de mostrar el nuevo campo, hay que eliminar el elemento "valor" en caso de que tenga
+        //para evitar estar añadiendo elementos "valor" en múltiples ocasiones
+        if($(e.currentTarget).parent().parent().next().length>0){
+            $(e.currentTarget).parent().parent().next().remove();
+        }
         $(e.currentTarget).parent().parent().after(campo);
+
+    },
+
+    fireSearch:function(e){
+        //Obteniendo cada div para armar el filtro
+        var rows=$( ".filterSection" ).length;
+        var filtro='fields=id,name,quick_contact_c,business_type_c,account_type,assigned_user_id,assigned_user_name,gps_latitud_c,gps_longitud_c,visit_status_c,estrellas_c,photography_c';
+        if(rows > 0){
+            for (var i = 0; i < rows; i++) {
+
+                var nombre_campo=$('.filterSection').eq(i).attr('field_name');
+                var operador=$('.filterSection').eq(i).find('.operador').val();
+                var valor=$('.filterSection').eq(i).find('.field_value').val();
+                if(valor ==undefined){
+                    valor='';
+                }
+
+                filtro+='&filter['+i+']['+nombre_campo+']['+operador+']='+valor;
+                
+            }
+
+            var self=this;
+            var urlFiltro = app.api.buildURL('Accounts?'+filtro,null, null, null);
+
+             app.api.call('GET', urlFiltro, {}, {
+                success: _.bind(function (data) {
+
+                    console.log(data);
+
+                },self),
+
+            });
+
+
+        }
+        /*
+        $( ".filterSection" ).each(function( index ) {
+            var nombre_campo=$(this).attr('field_name');
+            var operador=$(this).find('.operador').val();
+            var valor=$(this).find('.field_value').val();
+        });
+        */
 
     },
 
