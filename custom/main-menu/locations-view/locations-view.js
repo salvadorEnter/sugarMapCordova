@@ -663,10 +663,8 @@ let LocationsView = customization.extend(NomadView, {
 
             campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
     '<label class="field__label">Inicio</label>'+
-    '<div class="field__controls field__controls--flex">'+
-        '<span class="input-wrapper">'+
+    '<div class="field__controls field__controls--flex">'+        
             '<input type="date" autocorrect="off" value="" class="empty field_value">'+
-        '</span>'+
         '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
 '</button>'+
@@ -676,9 +674,7 @@ let LocationsView = customization.extend(NomadView, {
 '<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
     '<label class="field__label">Fin</label>'+
     '<div class="field__controls field__controls--flex">'+
-        '<span class="input-wrapper">'+
             '<input type="date" autocorrect="off" value="" class="empty field_value">'+
-        '</span>'+
         '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
 '</button>'+
@@ -686,15 +682,13 @@ let LocationsView = customization.extend(NomadView, {
     '</div>'+
 '</div>';
 
-        }else if(type=='date' || type=='datetime'){
+        }else if((type=='date' || type=='datetime') && (operador == '$equals' || operador=='$starts' || operador =='$lt' || operador =='$gt' || operador =='$lte' || operador =='$gte')){
 
              campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
     '<label class="field__label">Valor</label>'+
     '<div class="field__controls field__controls--flex">'+
-        '<span class="input-wrapper">'+
             '<input type="date" autocorrect="off" value="" class="field_value"'+
                 'class="empty">'+
-        '</span>'+
         '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
 '</button>'+
@@ -745,7 +739,8 @@ let LocationsView = customization.extend(NomadView, {
         //Antes de mostrar el nuevo campo, hay que eliminar el elemento "valor" en caso de que tenga
         //para evitar estar añadiendo elementos "valor" en múltiples ocasiones
         if($(e.currentTarget).parent().parent().next().length>0){
-            $(e.currentTarget).parent().parent().next().remove();
+            //$(e.currentTarget).parent().parent().next().remove();
+            $(e.currentTarget).parent().parent().siblings('.field').remove();
         }
         $(e.currentTarget).parent().parent().after(campo);
 
