@@ -87,24 +87,24 @@ let LocationsView = customization.extend(NomadView, {
         self=this;
 
         var params = {
-                'fields':'id,name,quick_contact_c,business_type_c,account_type,assigned_user_id,assigned_user_name,gps_latitud_c,gps_longitud_c,visit_status_c,estrellas_c,photography_c',
-                'order_by':'date_modified:DESC',
-                'max_num':-1
-            };
+            'fields':'id,name,quick_contact_c,business_type_c,account_type,assigned_user_id,assigned_user_name,gps_latitud_c,gps_longitud_c,visit_status_c,estrellas_c,photography_c',
+            'order_by':'date_modified:DESC',
+            'max_num':-1
+        };
 
         var url = app.api.buildURL("GetAccountsForMap", '', {}, {});
 
         app.alert.show('accounts_load', {
-                level: 'load',
-                closeable: false,
-                messages: app.lang.get('LBL_LOADING'),
-            });
+            level: 'load',
+            closeable: false,
+            messages: app.lang.get('LBL_LOADING'),
+        });
 
-            app.api.call("read", url, null, {
-                success: data => {
+        app.api.call("read", url, null, {
+            success: data => {
 
-                    self.defCuentas=data.records;
-                    var contextoApiCuentas=this;
+                self.defCuentas=data.records;
+                var contextoApiCuentas=this;
                     //Se establece height dinámicamente, con base a la altura de la ventana
                     document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
                     var mapDiv = document.getElementById("map");
@@ -112,8 +112,8 @@ let LocationsView = customization.extend(NomadView, {
                     var map=plugin.google.maps.Map.getMap(mapDiv,{
                         'camera': {
                             'zoom': 7
-                            }
-                        });
+                        }
+                    });
 
                     if(data.records.length>0){
 
@@ -126,33 +126,33 @@ let LocationsView = customization.extend(NomadView, {
 
                             if(data.records[i].gps_latitud_c !="" && data.records[i].gps_longitud_c != ""){
 
-                                 var icono='';
-                                 switch(data.records[i].visit_c){
-                                    
-                                    case "Planned":
-                                        icono = "img/icon-negro_.png";
-                                    break;
-                                    
-                                    case "Done":
-                                        icono = "img/icon-verde_.png";
-                                    break;
-                                    
-                                    case "Rescheduled":
-                                        icono = "img/icon-azul_.png";
-                                    break;
-                                    case "Canceled":
-                                        icono = "img/icon-rojo_.png";
-                                    break;
-                                    case "Pending":
-                                        icono = "img/icon-amarillo_.png";
-                                    break;
+                               var icono='';
+                               switch(data.records[i].visit_c){
 
-                                    case "":
-                                        icono = "img/icon-negro_.png";
-                                    break;
+                                case "Planned":
+                                icono = "img/icon-negro_.png";
+                                break;
 
-                                    default:
-                                        icono = "img/icon-negro_.png";
+                                case "Done":
+                                icono = "img/icon-verde_.png";
+                                break;
+
+                                case "Rescheduled":
+                                icono = "img/icon-azul_.png";
+                                break;
+                                case "Canceled":
+                                icono = "img/icon-rojo_.png";
+                                break;
+                                case "Pending":
+                                icono = "img/icon-amarillo_.png";
+                                break;
+
+                                case "":
+                                icono = "img/icon-negro_.png";
+                                break;
+
+                                default:
+                                icono = "img/icon-negro_.png";
                                 }//switch
                                 
                                 bounds.push({"lat":data.records[i].gps_latitud_c,"lng":data.records[i].gps_longitud_c});
@@ -188,23 +188,23 @@ let LocationsView = customization.extend(NomadView, {
 
                                     var domicilio='';
                                     if(definicionCuenta.calle != null && definicionCuenta.calle != "" && definicionCuenta.calle !=undefined &&
-                                    definicionCuenta.ciudad !=null && definicionCuenta.ciudad != "" && definicionCuenta.ciudad !=undefined){
+                                        definicionCuenta.ciudad !=null && definicionCuenta.ciudad != "" && definicionCuenta.ciudad !=undefined){
                                         domicilio='<b> '+definicionCuenta.calle+', '+definicionCuenta.ciudad+'<br>'+
-                                        definicionCuenta.estado+' ' +definicionCuenta.cp +'<br>'+
-                                        definicionCuenta.pais+'</b>';
-                                    }
-                                    var contenido='<p>Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
-                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
-                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
-                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
-                                                    '<p>Domicilio: '+domicilio+'</p>';
+                                    definicionCuenta.estado+' ' +definicionCuenta.cp +'<br>'+
+                                    definicionCuenta.pais+'</b>';
+                                }
+                                var contenido='<p>Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
+                                '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                '<p>Domicilio: '+domicilio+'</p>';
 
                                     //$('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
 
                                     var contenidoUsuario='<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
-                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
-                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
-                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+' "target="_blank">'+definicionCuenta.reporta +'</a></p>';
+                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+' "target="_blank">'+definicionCuenta.reporta +'</a></p>';
 
                                     //Llenando sección con las estrellas
                                     var estrellas=definicionCuenta.rate_c;
@@ -219,30 +219,30 @@ let LocationsView = customization.extend(NomadView, {
                                         //$('#star_container').html(contenidoEstrellas);
                                     }
 
-                                        var contenidoInfoWindow='<div class="tab" style="width: 330px;border-bottom: 1px solid #ddd">'+
-                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;">Cuenta</button>'+
-                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Usuario</button>'+
-                                        '</div>'+
-                                        '<div id="Cuenta" class="tabcontent">'+
-                                            '<div id="contenidoCuenta" style="padding: 10px;">'+
-                                                    '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="100">'+
-                                                    '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
-                                                    contenidoEstrellas+
-                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
-                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
-                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
-                                                    '<p>Domicilio:'+domicilio+'</p>'+            
-                                            '</div>'+
-                                        '</div>'+
-                                        '<div id="Usuario" class="tabcontent" style="display:none">'+
-                                            '<div id="contenidoUsuario" style="padding: 10px;">'+
-                                                    '<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
-                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
-                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
-                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
-                                            '</div>'+
-                                        '</div>';
-                                        
+                                    var contenidoInfoWindow='<div class="tab" style="width: 330px;border-bottom: 1px solid #ddd">'+
+                                    '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;">Cuenta</button>'+
+                                    '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Usuario</button>'+
+                                    '</div>'+
+                                    '<div id="Cuenta" class="tabcontent">'+
+                                    '<div id="contenidoCuenta" style="padding: 10px;">'+
+                                    '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="100">'+
+                                    '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
+                                    contenidoEstrellas+
+                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                    '<p>Domicilio:'+domicilio+'</p>'+            
+                                    '</div>'+
+                                    '</div>'+
+                                    '<div id="Usuario" class="tabcontent" style="display:none">'+
+                                    '<div id="contenidoUsuario" style="padding: 10px;">'+
+                                    '<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
+                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
+                                    '</div>'+
+                                    '</div>';
+
                                     infowindow.setContent(contenidoInfoWindow);
                                     infowindow.open(this);
 
@@ -257,14 +257,14 @@ let LocationsView = customization.extend(NomadView, {
                     }//if length data.records
                 },//end success api call
                 error: er => {
-                        app.alert.show('api_carga_error', {
-                            level: 'error',
-                            autoClose: true,
-                            messages: 'Error al cargar datos: '+er,
-                        });
+                    app.alert.show('api_carga_error', {
+                        level: 'error',
+                        autoClose: true,
+                        messages: 'Error al cargar datos: '+er,
+                    });
                 },
                 complete: () => {
-                        app.alert.dismiss('accounts_load');
+                    app.alert.dismiss('accounts_load');
                 },
             });//App.api.call
     },//end getCuentas
@@ -272,48 +272,48 @@ let LocationsView = customization.extend(NomadView, {
     obtenerUbicacion(){
         self=this;
 
-         app.alert.show('getLatLng', {
-              level: 'load',
-              closeable: false,
-              messages: 'Cargando, por favor espere',
-            });
+        app.alert.show('getLatLng', {
+          level: 'load',
+          closeable: false,
+          messages: 'Cargando, por favor espere',
+      });
         geolocation.getCurrentPosition({
-              successCb: (position) => {
-                app.alert.dismiss('getLatLng');
+          successCb: (position) => {
+            app.alert.dismiss('getLatLng');
 
-                self.currentLatitud=position.coords.latitude;
-                self.currentLng=position.coords.longitude;
-                document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
-                    var mapDiv = document.getElementById("map");
+            self.currentLatitud=position.coords.latitude;
+            self.currentLng=position.coords.longitude;
+            document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
+            var mapDiv = document.getElementById("map");
 
-                    var map=plugin.google.maps.Map.getMap(mapDiv,{
-                        'camera': {
-                            'zoom': 7
-                            }
-                        });
+            var map=plugin.google.maps.Map.getMap(mapDiv,{
+                'camera': {
+                    'zoom': 7
+                }
+            });
 
-                    var currentLocationMarker = map.addMarker({
-                                    'position': {"lat":self.currentLatitud,"lng":self.currentLng},
-                                    'title': 'Usted está aquí',
-                                    'icon': {
-                                        'url': 'img/iconCurrentLocation.png'
-                                    }
-                                });
+            var currentLocationMarker = map.addMarker({
+                'position': {"lat":self.currentLatitud,"lng":self.currentLng},
+                'title': 'Usted está aquí',
+                'icon': {
+                    'url': 'img/iconCurrentLocation.png'
+                }
+            });
 
                         // Show the infoWindow
-                    currentLocationMarker.showInfoWindow();
-              },
-              errorCb: (errCode, errMessage) => {
-                app.alert.dismiss('getLatLng');
-                app.alert.show('getLatLngError', {
-                    level: 'error',
-                    autoClose: true,
-                    messages: 'No se ha podido obtener la ubicación',
+                        currentLocationMarker.showInfoWindow();
+                    },
+                    errorCb: (errCode, errMessage) => {
+                        app.alert.dismiss('getLatLng');
+                        app.alert.show('getLatLngError', {
+                            level: 'error',
+                            autoClose: true,
+                            messages: 'No se ha podido obtener la ubicación',
+                        });
+                    },
+                    enableHighAccuracy: false,
+                    timeout: 300000,
                 });
-              },
-              enableHighAccuracy: false,
-              timeout: 300000,
-        });
 
     },
 
@@ -529,28 +529,18 @@ let LocationsView = customization.extend(NomadView, {
         $(evt.currentTarget).siblings().attr('style',"background-color:#ffffff;color:#337ab7;")
         switch(pestana){
             case "Cuenta":
-                $('#Cuenta').show();
-                $('#Usuario').hide();
+            $('#Cuenta').show();
+            $('#Usuario').hide();
                 //$('#Analiticos').hide();
-            break;
+                break;
 
-            case "Usuario":
+                case "Usuario":
                 $('#Usuario').show();
                 $('#Cuenta').hide();
                 //$('#Analiticos').hide();
-            break;
+                break;
 
         }//switch
-        
-        /*
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(pestana).style.display = "block";
-        evt.currentTarget.className += " active";
-        */
-
     },
 
     openViewFilter:function(evt){
@@ -584,19 +574,19 @@ let LocationsView = customization.extend(NomadView, {
         var valor=$(e.currentTarget).parent().attr('field_name');
         */
         var divCampoFiltro='<div style="border: 1px solid #9aa5ad;'+
-  'border-radius: 16px;margin:10px" class="'+campo+' '+nombre_campo+' filterSection" field_label="'+campo+'" field_name="'+nombre_campo+'">'+
-  '<a href="javascript:void(0)" class="deleteField"">×</a>'+
-  '<h4 style="padding-left: 32px;">'+campo+'</h4>'+
-'<div class="field field--enum" style="padding: 8px 8px 8px 32px;width: 70%;">'+
-    '<label class="field__label">Operador</label>'+
-    '<div class="field__controls">'+
+        'border-radius: 16px;margin:10px" class="'+campo+' '+nombre_campo+' filterSection" field_label="'+campo+'" field_name="'+nombre_campo+'">'+
+        '<a href="javascript:void(0)" class="deleteField"">×</a>'+
+        '<h4 style="padding-left: 32px;">'+campo+'</h4>'+
+        '<div class="field field--enum" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+        '<label class="field__label">Operador</label>'+
+        '<div class="field__controls">'+
         '<select name="enum" class="operador">'+
-                opciones+
+        opciones+
         '</select>'+
         '<i class="icondefault icon icon-caret-down selectArrow-icon"></i>'+
-    '</div>'+
-'</div>'+
-'</div>';
+        '</div>'+
+        '</div>'+
+        '</div>';
 
         $('#filterSection').append(divCampoFiltro);
 
@@ -622,14 +612,14 @@ let LocationsView = customization.extend(NomadView, {
         if(type=='text' || type=='varchar' || type =='name'){
 
             campo='<div class="field field--onfocus" style="padding: 8px 8px 30px 32px;width: 70%;">'+
-    '<label class="field__label">Valor</label>'+
-    '<div class="field__controls">'+
-        '<span class="input-wrapper">'+
+            '<label class="field__label">Valor</label>'+
+            '<div class="field__controls">'+
+            '<span class="input-wrapper">'+
             '<input type="text" autocorrect="off" value="" class="field_value">'+
             '<i class="icondefault icon icon-remove clear-button"></i>'+
-        '</span>'+
-    '</div>'+
-'</div>';
+            '</span>'+
+            '</div>'+
+            '</div>';
 
         }else if(type=='enum'){
 
@@ -643,16 +633,16 @@ let LocationsView = customization.extend(NomadView, {
                 var strOpciones='';
                 for(var key in lista){
 
-                strOpciones+='<option value="'+key+'">'+lista[key]+'</option>';
+                    strOpciones+='<option value="'+key+'">'+lista[key]+'</option>';
                 }
 
 
                 campo='<div class="field field--enum field--onfocus" style="padding: 8px 8px 30px 32px;width: 70%;">'+
                 '<label class="field__label">Valor</label>'+
                 '<div class="field__controls">'+
-                    '<select name="enum" class="field_value">'+
-                        strOpciones+
-                    '</select>'+
+                '<select name="enum" class="field_value">'+
+                strOpciones+
+                '</select>'+
                 '<i class="icondefault icon icon-caret-down selectArrow-icon"></i>'+
                 '</div>'+
                 '</div>';
@@ -662,46 +652,46 @@ let LocationsView = customization.extend(NomadView, {
         }else if(operador=='$dateBetween'){
 
             campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
-    '<label class="field__label">Inicio</label>'+
-    '<div class="field__controls field__controls--flex">'+        
+            '<label class="field__label">Inicio</label>'+
+            '<div class="field__controls field__controls--flex">'+        
             '<input type="date" autocorrect="off" value="" class="empty field_value">'+
-        '<div class="btn-group clear-button hide">'+
+            '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
-'</button>'+
-        '</div>'+
-    '</div>'+
-'</div>'+
-'<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
-    '<label class="field__label">Fin</label>'+
-    '<div class="field__controls field__controls--flex">'+
+            '</button>'+
+            '</div>'+
+            '</div>'+
+            '</div>'+
+            '<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+            '<label class="field__label">Fin</label>'+
+            '<div class="field__controls field__controls--flex">'+
             '<input type="date" autocorrect="off" value="" class="empty field_value">'+
-        '<div class="btn-group clear-button hide">'+
+            '<div class="btn-group clear-button hide">'+
             '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
-'</button>'+
-        '</div>'+
-    '</div>'+
-'</div>';
+            '</button>'+
+            '</div>'+
+            '</div>'+
+            '</div>';
 
         }else if((type=='date' || type=='datetime') && (operador == '$equals' || operador=='$starts' || operador =='$lt' || operador =='$gt' || operador =='$lte' || operador =='$gte')){
 
-             campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
-    '<label class="field__label">Valor</label>'+
-    '<div class="field__controls field__controls--flex">'+
-            '<input type="date" autocorrect="off" value="" class="field_value"'+
-                'class="empty">'+
-        '<div class="btn-group clear-button hide">'+
-            '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
-'</button>'+
-        '</div>'+
-    '</div>'+
-'</div>';
-        }
+           campo='<div class="field field--date" style="padding: 8px 8px 8px 32px;width: 70%;">'+
+           '<label class="field__label">Valor</label>'+
+           '<div class="field__controls field__controls--flex">'+
+           '<input type="date" autocorrect="off" value="" class="field_value"'+
+           'class="empty">'+
+           '<div class="btn-group clear-button hide">'+
+           '<button class="btn secondary-btn inert"><i class="icondefault icon icon-remove control__btn_remove"></i>'+
+           '</button>'+
+           '</div>'+
+           '</div>'+
+           '</div>';
+       }
 
-        return campo;
+       return campo;
 
-    },
+   },
 
-    removerFiltro:function(e){
+   removerFiltro:function(e){
 
         //Añadir nuevamente a las opciones disponibles el item removido
         //var etiqueta=$(e.currentTarget).parent()[0].classList[0];
@@ -751,11 +741,13 @@ let LocationsView = customization.extend(NomadView, {
         var rows=$( ".filterSection" ).length;
         
         var filtro='fields=id,name,account_type,gps_latitud_c,gps_longitud_c,quick_contact_c,business_type_c,'+
-        'visit_c,rate_c,photography_c,billing_address_street,billing_address_city,billing_address_state,billing_address_postalcode,billing_address_country,assigned_user_id';
+        'visit_c,rate_c,photography_c,billing_address_street,billing_address_city,billing_address_state,billing_address_postalcode,billing_address_country,assigned_user_id&max_num=-1';
+        var banderaSeguir=true;
         if(rows > 0){
             for (var i = 0; i <= rows; i++) {
 
-                //Validación para agrega filtro sobre mostrar solo las cuentas donde el usuario asignado es el usuario actual
+                //Validación para agregar filtro sobre mostrar solo las cuentas donde el usuario asignado es el usuario actual
+                //Se agrega al final de la cadena armada
                 if(i==rows){
 
                     filtro+='&filter['+i+'][assigned_user_id][$in][]='+App.user.get('id');
@@ -774,9 +766,18 @@ let LocationsView = customization.extend(NomadView, {
                         for (var j = 0; j <valores.length; j++) {
                             arr_valores.push(valores.eq(j).val());
                         }
+                        //Condición para saber establecer bandera y saber si el flujo debe seguir para generar petición hacia api
+                        var encontrado=arr_valores.indexOf("");
+                        if(encontrado!=-1){
+
+                            banderaSeguir=false;
+                        }
 
                     }else{
                         valor=$('.filterSection').eq(i).find('.field_value').val();
+                        if(valor==""){
+                            banderaSeguir=false;
+                        }
                     }
 
                     if(valor ==undefined){
@@ -794,24 +795,25 @@ let LocationsView = customization.extend(NomadView, {
                     } 
 
                 }
-                  
+
             }
 
-            var self=this;
-            var urlFiltro = app.api.buildURL('Accounts?'+filtro,null, null, null);
+            if(banderaSeguir){
+                var self=this;
+                var urlFiltro = app.api.buildURL('Accounts?'+filtro,null, null, null);
 
-            app.alert.show('accounts_load', {
-                level: 'load',
-                closeable: false,
-                messages: app.lang.get('LBL_LOADING'),
-            });
+                app.alert.show('accounts_load', {
+                    level: 'load',
+                    closeable: false,
+                    messages: app.lang.get('LBL_LOADING'),
+                });
 
-             app.api.call('GET', urlFiltro, {}, {
-                success: _.bind(function (data) {
-                    app.alert.dismiss('accounts_load');
-                    self.closeNav();
-                    self.defCuentas=data.records;
-                    var contextoApiCuentas=this;
+                app.api.call('GET', urlFiltro, {}, {
+                    success: _.bind(function (data) {
+                        app.alert.dismiss('accounts_load');
+                        self.closeNav();
+                        self.defCuentas=data.records;
+                        var contextoApiCuentas=this;
                     //Se establece height dinámicamente, con base a la altura de la ventana
                     document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
                     var mapDiv = document.getElementById("map");
@@ -819,8 +821,8 @@ let LocationsView = customization.extend(NomadView, {
                     var map=plugin.google.maps.Map.getMap(mapDiv,{
                         'camera': {
                             'zoom': 7
-                            }
-                        });
+                        }
+                    });
 
                     //Limpiando mapa para mostrar los nuevos marcadores basados en el filtro
                     map.clear();
@@ -836,33 +838,33 @@ let LocationsView = customization.extend(NomadView, {
 
                             if(data.records[i].gps_latitud_c !="" && data.records[i].gps_longitud_c != ""){
 
-                                 var icono='';
-                                 switch(data.records[i].visit_c){
-                                    
-                                    case "Planned":
-                                        icono = "img/icon-negro_.png";
-                                    break;
-                                    
-                                    case "Done":
-                                        icono = "img/icon-verde_.png";
-                                    break;
-                                    
-                                    case "Rescheduled":
-                                        icono = "img/icon-azul_.png";
-                                    break;
-                                    case "Canceled":
-                                        icono = "img/icon-rojo_.png";
-                                    break;
-                                    case "Pending":
-                                        icono = "img/icon-amarillo_.png";
-                                    break;
+                               var icono='';
+                               switch(data.records[i].visit_c){
 
-                                    case "":
-                                        icono = "img/icon-negro_.png";
-                                    break;
+                                case "Planned":
+                                icono = "img/icon-negro_.png";
+                                break;
 
-                                    default:
-                                        icono = "img/icon-negro_.png";
+                                case "Done":
+                                icono = "img/icon-verde_.png";
+                                break;
+
+                                case "Rescheduled":
+                                icono = "img/icon-azul_.png";
+                                break;
+                                case "Canceled":
+                                icono = "img/icon-rojo_.png";
+                                break;
+                                case "Pending":
+                                icono = "img/icon-amarillo_.png";
+                                break;
+
+                                case "":
+                                icono = "img/icon-negro_.png";
+                                break;
+
+                                default:
+                                icono = "img/icon-negro_.png";
                                 }//switch
                                 
                                 bounds.push({"lat":data.records[i].gps_latitud_c,"lng":data.records[i].gps_longitud_c});
@@ -895,23 +897,23 @@ let LocationsView = customization.extend(NomadView, {
 
                                     var domicilio='';
                                     if(definicionCuenta.calle != null && definicionCuenta.calle != "" && definicionCuenta.calle !=undefined &&
-                                    definicionCuenta.ciudad !=null && definicionCuenta.ciudad != "" && definicionCuenta.ciudad !=undefined){
+                                        definicionCuenta.ciudad !=null && definicionCuenta.ciudad != "" && definicionCuenta.ciudad !=undefined){
                                         domicilio='<b> '+definicionCuenta.calle+', '+definicionCuenta.ciudad+'<br>'+
-                                        definicionCuenta.estado+' ' +definicionCuenta.cp +'<br>'+
-                                        definicionCuenta.pais+'</b>';
-                                    }
-                                    var contenido='<p>Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
-                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
-                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
-                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
-                                                    '<p>Domicilio: '+domicilio+'</p>';
+                                    definicionCuenta.estado+' ' +definicionCuenta.cp +'<br>'+
+                                    definicionCuenta.pais+'</b>';
+                                }
+                                var contenido='<p>Nombre del negocio: <input type = "hidden" value="'+definicionCuenta.id+'"><font id="linkCuenta" color="#0679c8">'+definicionCuenta.name+'</font></p>'+
+                                '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                '<p>Domicilio: '+domicilio+'</p>';
 
                                     //$('#nameStars').children('div').eq(0).html('<h1>'+definicionCuenta.name+'<h1>');
 
                                     var contenidoUsuario='<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
-                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
-                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
-                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+' "target="_blank">'+definicionCuenta.reporta +'</a></p>';
+                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+' "target="_blank">'+definicionCuenta.reporta +'</a></p>';
 
                                     //Llenando sección con las estrellas
                                     var estrellas=definicionCuenta.rate_c;
@@ -926,30 +928,30 @@ let LocationsView = customization.extend(NomadView, {
                                         //$('#star_container').html(contenidoEstrellas);
                                     }
 
-                                        var contenidoInfoWindow='<div class="tab" style="width: 330px;border-bottom: 1px solid #ddd">'+
-                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;">Cuenta</button>'+
-                                        '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Usuario</button>'+
-                                        '</div>'+
-                                        '<div id="Cuenta" class="tabcontent">'+
-                                            '<div id="contenidoCuenta" style="padding: 10px;">'+
-                                                    '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="100">'+
-                                                    '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
-                                                    contenidoEstrellas+
-                                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
-                                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
-                                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
-                                                    '<p>Domicilio:'+domicilio+'</p>'+            
-                                            '</div>'+
-                                        '</div>'+
-                                        '<div id="Usuario" class="tabcontent" style="display:none">'+
-                                            '<div id="contenidoUsuario" style="padding: 10px;">'+
-                                                    '<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
-                                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
-                                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
-                                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
-                                            '</div>'+
-                                        '</div>';
-                                        
+                                    var contenidoInfoWindow='<div class="tab" style="width: 330px;border-bottom: 1px solid #ddd">'+
+                                    '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;border-left:1px solid #dadada;border-right:1px solid #dadada;border-top:1px solid #dadada;">Cuenta</button>'+
+                                    '<button class="tablinks" style="background-color:#ffffff;color:#337ab7;">Usuario</button>'+
+                                    '</div>'+
+                                    '<div id="Cuenta" class="tabcontent">'+
+                                    '<div id="contenidoCuenta" style="padding: 10px;">'+
+                                    '<img style="float: left; margin: 0px 15px 15px 0px;" src="'+urlImage+'" width="100">'+
+                                    '<p> Nombre del negocio: <a href="#Accounts/'+definicionCuenta.id+'"target="_blank"> '+definicionCuenta.name+'</a></p>'+
+                                    contenidoEstrellas+
+                                    '<p>Contacto rápido: <b> '+definicionCuenta.quick_contact_c+'</b></p>'+
+                                    '<p>Tipo de negocio: <b> '+App.lang.getAppListStrings('business_type_list')[definicionCuenta.business_type_c]+'</b></p>'+
+                                    '<p>Tipo: <b> '+App.lang.getAppListStrings('account_type_dom')[definicionCuenta.account_type]+'</b></p>'+
+                                    '<p>Domicilio:'+domicilio+'</p>'+            
+                                    '</div>'+
+                                    '</div>'+
+                                    '<div id="Usuario" class="tabcontent" style="display:none">'+
+                                    '<div id="contenidoUsuario" style="padding: 10px;">'+
+                                    '<p>Usuario: <a href="#Users/'+definicionCuenta.id_user+' "target="_blank">'+definicionCuenta.nombre_completo_usuario +'</a></p>'+
+                                    '<p>Nombre de Usuario: <b>'+definicionCuenta.nombre_usuario +'</b></p>'+
+                                    '<p>Departamento: <b>'+definicionCuenta.depto +'</b></p>'+
+                                    '<p>Informa a: <a href="#Users/'+definicionCuenta.reporta_id+'" target="_blank">'+definicionCuenta.reporta +'</a></p>'+
+                                    '</div>'+
+                                    '</div>';
+
                                     infowindow.setContent(contenidoInfoWindow);
                                     infowindow.open(this);
 
@@ -962,29 +964,26 @@ let LocationsView = customization.extend(NomadView, {
                             target: bounds
                         });
                     }//if length data.records
-
-                    
-
                 },self),
-
             });
 
+            }//Fin banderaSeguir
+            else{
 
-        }
-        /*
-        $( ".filterSection" ).each(function( index ) {
-            var nombre_campo=$(this).attr('field_name');
-            var operador=$(this).find('.operador').val();
-            var valor=$(this).find('.field_value').val();
-        });
-        */
+                app.alert.show('message-id', {
+                    level: 'error',
+                    messages: 'Falta información para filtrar',
+                    autoClose: false
+                });
 
-    },
+            }
+        }//Fin if rows
+    },//Fin fireSearch
 
     search:function(key,defCuentas){
         for(var i=0;i<defCuentas.length;i++){
             if(defCuentas[i].id===key){
-            return defCuentas[i];
+                return defCuentas[i];
             }
         }
     },
