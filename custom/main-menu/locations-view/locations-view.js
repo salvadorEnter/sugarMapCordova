@@ -72,7 +72,7 @@ let LocationsView = customization.extend(NomadView, {
         this.campos=this.getFilterFields('Accounts');
 
         for (var key in this.campos){
-            if(this.campos[key].type != undefined){
+            if(this.campos[key].type != undefined && this.campos[key].type != 'relate'){
                 var opcion={
                     'nombre':this.campos[key].name,
                     'etiqueta':app.lang.get(this.campos[key].vname, 'Accounts')
@@ -753,22 +753,48 @@ let LocationsView = customization.extend(NomadView, {
         var filtro='fields=id,name,account_type,gps_latitud_c,gps_longitud_c,quick_contact_c,business_type_c,'+
         'visit_c,rate_c,photography_c,billing_address_street,billing_address_city,billing_address_state,billing_address_postalcode,billing_address_country,assigned_user_id';
         if(rows > 0){
-            for (var i = 0; i < rows; i++) {
+            for (var i = 0; i <= rows; i++) {
 
-                var nombre_campo=$('.filterSection').eq(i).attr('field_name');
-                var tipo_campo=this.campos[nombre_campo].type;
-                var operador=$('.filterSection').eq(i).find('.operador').val();
-                var valor=$('.filterSection').eq(i).find('.field_value').val();
+                //Validación para agrega filtro sobre mostrar solo las cuentas donde el usuario asignado es el usuario actual
+                if(i==rows){
 
-                if(valor ==undefined){
-                    valor='';
-                }
+                    filtro+='&filter['+i+'][assigned_user_id][$in][]='+App.user.get('id');
 
-                if(tipo_campo=='enum' && operador != '$not_empty' && operador != '$empty'){
-                    filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+valor;
                 }else{
-                    filtro+='&filter['+i+']['+nombre_campo+']['+operador+']='+valor;
-                }   
+                    var nombre_campo=$('.filterSection').eq(i).attr('field_name');
+                    var tipo_campo=this.campos[nombre_campo].type;
+                    var operador=$('.filterSection').eq(i).find('.operador').val();
+                    var valores=$('.filterSection').eq(i).find('.field_value');
+                    var valor='';
+                    var arr_valores=[];
+                    //Validación para controlar la generación del filtro cuando se tienen más de un valor,
+                    //p.ej para $dateBetween se necesita fecha inicio y fecha fin
+                    if(valores.length>1){
+
+                        for (var j = 0; j <valores.length; j++) {
+                            arr_valores.push(valores.eq(j).val());
+                        }
+
+                    }else{
+                        valor=$('.filterSection').eq(i).find('.field_value').val();
+                    }
+
+                    if(valor ==undefined){
+                        valor='';
+                    }
+
+                    if(tipo_campo=='enum' && operador != '$not_empty' && operador != '$empty' && operador !='$dateBetween'){
+                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+valor;
+                    }else if(arr_valores.length>0){//condición generada únicamente para el filtro de $dateBetween
+                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+arr_valores[0];
+                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+arr_valores[1];
+
+                    }else{
+                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+']='+valor;
+                    } 
+
+                }
+                  
             }
 
             var self=this;
