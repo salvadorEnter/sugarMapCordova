@@ -744,58 +744,44 @@ let LocationsView = customization.extend(NomadView, {
         'visit_c,rate_c,photography_c,billing_address_street,billing_address_city,billing_address_state,billing_address_postalcode,billing_address_country,assigned_user_id&max_num=-1';
         var banderaSeguir=true;
         if(rows > 0){
-            for (var i = 0; i <= rows; i++) {
+            for (var i = 0; i < rows; i++) {
+                var nombre_campo=$('.filterSection').eq(i).attr('field_name');
+                var tipo_campo=this.campos[nombre_campo].type;
+                var operador=$('.filterSection').eq(i).find('.operador').val();
+                var valores=$('.filterSection').eq(i).find('.field_value');
+                var valor='';
+                var arr_valores=[];
+                //Validación para controlar la generación del filtro cuando se tienen más de un valor,
+                //p.ej para $dateBetween se necesita fecha inicio y fecha fin
+                if(valores.length>1){
 
-                //Validación para agregar filtro sobre mostrar solo las cuentas donde el usuario asignado es el usuario actual
-                //Se agrega al final de la cadena armada
-                if(i==rows){
-
-                    filtro+='&filter['+i+'][assigned_user_id][$in][]='+App.user.get('id');
+                    for (var j = 0; j <valores.length; j++) {
+                        arr_valores.push(valores.eq(j).val());
+                    }
+                    //Condición para establecer bandera y saber si el flujo debe seguir para generar petición hacia api en caso de que no existan campos vacios para generar el filtro 
+                    var encontrado=arr_valores.indexOf("");
+                    if(encontrado!=-1){
+                        banderaSeguir=false;
+                    }
 
                 }else{
-                    var nombre_campo=$('.filterSection').eq(i).attr('field_name');
-                    var tipo_campo=this.campos[nombre_campo].type;
-                    var operador=$('.filterSection').eq(i).find('.operador').val();
-                    var valores=$('.filterSection').eq(i).find('.field_value');
-                    var valor='';
-                    var arr_valores=[];
-                    //Validación para controlar la generación del filtro cuando se tienen más de un valor,
-                    //p.ej para $dateBetween se necesita fecha inicio y fecha fin
-                    if(valores.length>1){
-
-                        for (var j = 0; j <valores.length; j++) {
-                            arr_valores.push(valores.eq(j).val());
-                        }
-                        //Condición para saber establecer bandera y saber si el flujo debe seguir para generar petición hacia api
-                        var encontrado=arr_valores.indexOf("");
-                        if(encontrado!=-1){
-
-                            banderaSeguir=false;
-                        }
-
-                    }else{
-                        valor=$('.filterSection').eq(i).find('.field_value').val();
-                        if(valor==""){
-                            banderaSeguir=false;
-                        }
+                    valor=$('.filterSection').eq(i).find('.field_value').val();
+                    if(valor==""){
+                        banderaSeguir=false;
                     }
-
-                    if(valor ==undefined){
-                        valor='';
-                    }
-
-                    if(tipo_campo=='enum' && operador != '$not_empty' && operador != '$empty' && operador !='$dateBetween'){
-                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+valor;
-                    }else if(arr_valores.length>0){//condición generada únicamente para el filtro de $dateBetween
-                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+arr_valores[0];
-                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+arr_valores[1];
-
-                    }else{
-                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+']='+valor;
-                    } 
-
+                }
+                if(valor ==undefined){
+                    valor='';
                 }
 
+                if(tipo_campo=='enum' && operador != '$not_empty' && operador != '$empty' && operador !='$dateBetween'){
+                    filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+valor;
+                }else if(arr_valores.length>0){//condición generada únicamente para el filtro de $dateBetween
+                    filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+arr_valores[0];
+                    filtro+='&filter['+i+']['+nombre_campo+']['+operador+'][]='+arr_valores[1];
+                }else{
+                        filtro+='&filter['+i+']['+nombre_campo+']['+operador+']='+valor;
+                } 
             }
 
             if(banderaSeguir){
