@@ -49,7 +49,7 @@ const AccountDetailView = customization.extend(DetailView, {
                                 'pending_note_c',
                               ],
                               complete: () => {
-                                dialog.showAlert('El cliente tiene un adeudo, verificar el detalle en el campo Nota pendiente');
+                                dialog.showAlert(mensaje);
                               }
                           });
 

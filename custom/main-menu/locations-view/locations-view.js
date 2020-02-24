@@ -50,7 +50,7 @@ let LocationsView = customization.extend(NomadView, {
     events: {
         'click #linkCuenta': 'navigateCuenta',
         'click .tablinks':'openTab',
-        'click .buttonRound':'openViewFilter',
+        'click .buttonToFilter':'openViewFilter',
         'click .closebtn':'closeNav',
         'change #available_fields':'onChangeFiltro',
         'click .deleteField':'removerFiltro',
