@@ -629,6 +629,7 @@ let ReportsView = customization.extend(NomadView, {
 });
 
 // Register custom route "hello"
+/*
 customization.registerRoutes([{
     name: 'reports',      // Uniquely identifies the route
     steps: 'reports',     // Route hash fragment: '#hello'
@@ -648,5 +649,5 @@ customization.registerMainMenuItem({
     rank: 0,                                // Identifies the position of the action in the menu
     
 });
-
+*/
 module.exports = ReportsView;
