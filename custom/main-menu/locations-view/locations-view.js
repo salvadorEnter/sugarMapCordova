@@ -56,6 +56,7 @@ let LocationsView = customization.extend(NomadView, {
         'click .deleteField':'removerFiltro',
         'change .operador':'setFieldValue',
         'click #fireSearch':'fireSearch',
+        'click .setZoomCurrentLocation':'setZoomCurrentLocation',
     },
 
     initialize(options) {
@@ -294,9 +295,9 @@ let LocationsView = customization.extend(NomadView, {
 
             var currentLocationMarker = map.addMarker({
                 'position': {"lat":self.currentLatitud,"lng":self.currentLng},
-                'title': 'Usted está aquí',
+                'title': 'Ubicación actual',
                 'icon': {
-                    'url': 'img/iconCurrentLocation.png'
+                    'url': 'img/blue_circle_current.png'
                 }
             });
 
@@ -965,6 +966,28 @@ let LocationsView = customization.extend(NomadView, {
             }
         }//Fin if rows
     },//Fin fireSearch
+
+    setZoomCurrentLocation:function(){
+
+        document.getElementById("map").setAttribute("style", "width: 100%;height: " + window.screen.height+'px');
+        var mapDiv = document.getElementById("map");
+
+        // Initialize the map plugin
+        var map = plugin.google.maps.Map.getMap(mapDiv);
+        //Obteniendo zoom
+        var zoomCurrentPosition=map.map.getCameraZoom();
+
+        map.animateCamera({
+            target: {lat: this.currentLatitud, lng: this.currentLng},
+            zoom: zoomCurrentPosition,
+            //tilt: 60,
+            //bearing: 140,
+            duration: 3000,
+            padding: 0  // default = 20px
+        }, function() {
+            //alert("Camera target has been changed");
+            });
+    },
 
     search:function(key,defCuentas){
         for(var i=0;i<defCuentas.length;i++){
