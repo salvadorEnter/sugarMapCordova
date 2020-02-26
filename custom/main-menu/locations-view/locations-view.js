@@ -975,14 +975,16 @@ let LocationsView = customization.extend(NomadView, {
         // Initialize the map plugin
         var map = plugin.google.maps.Map.getMap(mapDiv);
         //Obteniendo zoom
-        var zoomCurrentPosition=map.map.getCameraZoom();
+        //var zoomCurrentPosition=map.map.getCameraZoom();
+        var zoomCurrentPosition=17;
+        //var zoomToCenter=zoomCurrentPosition+5;
 
         map.animateCamera({
             target: {lat: this.currentLatitud, lng: this.currentLng},
             zoom: zoomCurrentPosition,
             //tilt: 60,
             //bearing: 140,
-            duration: 3000,
+            duration: 1500,
             padding: 0  // default = 20px
         }, function() {
             //alert("Camera target has been changed");
